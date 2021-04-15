@@ -44,6 +44,11 @@ namespace PascalC3D.Compilacion.Instrucciones.Functions
                             generator.addPrint("f", value.getValue());
                             break;
                         case Tipos.BOOLEAN:
+                            if(value.symbol == null) // ACCEDIDO DE OBJETO
+                            {
+                                generator.addIf(value.getValue(),"1","==",value.trueLabel);
+                                generator.addGoto(value.falseLabel);
+                            }
                             string templabel = generator.newLabel();
                             generator.addLabel(value.trueLabel);
                             generator.addPrintTrue();

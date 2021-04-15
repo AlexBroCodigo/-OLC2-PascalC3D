@@ -30,19 +30,22 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
             try
             {
                 Generator generator = Generator.getInstance();
-                Entorno newEnv = new Entorno(ent,true);
                 string lblWhile = generator.newLabel();
                 generator.addComment("Inicia while");
                 generator.addLabel(lblWhile);
                 Retorno condicion = this.condicion.compilar(ent);
                 if (condicion.type.tipo == Tipos.BOOLEAN)
                 {
-                    newEnv.ybreak = condicion.falseLabel;
-                    newEnv.ycontinue = lblWhile;
+                    ent.fors.AddLast(new IteFor(false, null));
+                    ent.ybreak.AddLast(condicion.falseLabel);
+                    ent.ycontinue.AddLast(lblWhile);
                     generator.addLabel(condicion.trueLabel);
-                    foreach (Instruccion sentencia in sentencias) sentencia.compilar(newEnv, errores);
+                    foreach (Instruccion sentencia in sentencias) sentencia.compilar(ent, errores);
                     generator.addGoto(lblWhile);
                     generator.addLabel(condicion.falseLabel);
+                    ent.fors.RemoveLast();
+                    ent.ybreak.RemoveLast();
+                    ent.ycontinue.RemoveLast();
                     generator.addComment("Finaliza while");
                 }
                 else throw new Error("Semántico", "La condicion a evaluar en el while no es de tipo Boolean", ent.obtenerAmbito(), linea, columna);

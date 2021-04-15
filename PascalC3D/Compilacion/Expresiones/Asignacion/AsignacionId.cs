@@ -5,6 +5,7 @@ using PascalC3D.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static PascalC3D.Utils.Tipo;
 
 namespace PascalC3D.Compilacion.Expresiones.Asignacion
 {
@@ -42,7 +43,26 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
                 }
             } else
             {
-                return null;
+                Retorno anterior = this.anterior.compilar(ent);
+                if (anterior.type.tipo != Tipos.STRUCT) throw new Error("Semántico", "Acceso no valido para el tipo: " + anterior.type.tipo, ent.obtenerAmbito(), linea, columna);
+                
+                SimboloStruct symStruct = anterior.type.symStruct;
+                Jackson attribute = symStruct.getAttribute(this.id);
+                if (attribute.value == null) throw new Error("Semántico", "El object " + symStruct.identifier + "no tiene el atributo" + this.id,ent.obtenerAmbito(),linea,columna);
+
+                string tempAux = generator.newTemporal();
+                generator.freeTemp(tempAux);
+                string temp = generator.newTemporal();
+                if(anterior.symbol != null && !anterior.symbol.isHeap)
+                {
+                    //TODO variables por referencia
+                    generator.addGetStack(tempAux, anterior.getValue());
+                } else
+                {
+                    generator.addGetHeap(tempAux, anterior.getValue());
+                }
+                generator.addExpression(temp, tempAux, "" + attribute.index, "+");
+                return new Retorno(temp, true, attribute.value.type, new Simbolo(attribute.value.type, this.id, attribute.index, false, false, true,linea,columna));
             }
         }
     }

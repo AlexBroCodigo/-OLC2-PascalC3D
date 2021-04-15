@@ -18,7 +18,7 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
 
         private Expresion condicion;
         private LinkedList<Instruccion> sentencias;
-        private LinkedList<Instruccion> sentenciasElse;
+        public LinkedList<Instruccion> sentenciasElse;
 
         public If(Expresion condicion, LinkedList<Instruccion> sentencias, LinkedList<Instruccion> sentenciasElse, int linea, int columna)
         {

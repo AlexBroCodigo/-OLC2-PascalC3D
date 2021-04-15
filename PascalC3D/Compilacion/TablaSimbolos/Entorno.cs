@@ -1,4 +1,5 @@
-﻿using PascalC3D.Compilacion.Instrucciones.Variables;
+﻿using PascalC3D.Compilacion.Instrucciones.Functions;
+using PascalC3D.Compilacion.Instrucciones.Variables;
 using PascalC3D.Utils;
 using System;
 using System.Collections;
@@ -13,20 +14,17 @@ namespace PascalC3D.Compilacion.TablaSimbolos
         public Hashtable structs;
         public Hashtable vars;
         public Entorno anterior;
-        private int size;
-        public string ybreak;
-        public string ycontinue;
+        public int size;
+        public LinkedList<string> ybreak;
+        public LinkedList<string> ycontinue;
         public string yreturn;
         public string prop;
-        //public SimboloFuncion actualFunc; 
+        public SimboloFunction actualFunc; 
         public string ambito;
         public string nombre;
 
         //PARA LAS INSTRUCCIONES DE TRANSFERENCIA (BREAK,CONTINUE,RETURN)
-        public bool isAuxiliar; //si es un entorno auxiliar
-        public bool isFor; //si esta dentro de un for 
-        public Asignacion asignacion; //actualizar la variable para ciclo FOR
-
+        public LinkedList<IteFor> fors; //PARA ALMACENAR LAS ACTUALIZACIONES DE VARIABLES DE LOS CICLOS FOR QUE NOS SERVIRA EN LOS CONTINUES
 
         public Entorno(Entorno anterior, string ambito, string nombre)
         {
@@ -35,70 +33,114 @@ namespace PascalC3D.Compilacion.TablaSimbolos
             vars = new Hashtable();
             this.anterior = anterior;
             size = anterior!=null ? anterior.size : 0;
-            ybreak = anterior != null ? anterior.ybreak : null;
-            ycontinue = anterior != null ? anterior.ycontinue : null;
+            ybreak = new LinkedList<string>();
+            ycontinue = new LinkedList<string>();
             yreturn = anterior != null ? anterior.yreturn : null;
-            prop = "main";
-            //actualFunc = anterior != null ? anterior.actualFunc : null;
+            this.prop = "main";
+            actualFunc = anterior != null ? anterior.actualFunc : null;
             this.ambito = ambito;
             this.nombre = nombre;
-            isAuxiliar = false;
-            isFor = false;
+            fors = new LinkedList<IteFor>();
         }
-
-        public Entorno(Entorno anterior,bool isAuxiliar)
-        {
-            this.anterior = anterior;
-            this.isAuxiliar = isAuxiliar;
-            isFor = false;
-            ambito = null;
-            nombre = null;
-        }
-
-        public Entorno(Entorno anterior, bool isFor,Asignacion asignacion)
-        {
-            this.anterior = anterior;
-            isAuxiliar = true;
-            this.isFor = isFor;
-            this.asignacion = asignacion;
-            ambito = null;
-            nombre = null;
-        }
-
 
         public Simbolo addVar(string id, Tipo type, bool isConst, bool isRef,int linea, int columna)
         {
-            Entorno ent = this;
-            while (ent.isAuxiliar) ent = ent.anterior;
-
             id = id.ToLower();
-            if (!ent.vars.ContainsKey(id))
+            if (!vars.ContainsKey(id))
             {
-                Simbolo newVar = new Simbolo(type, id, ent.size++, isConst,ent.anterior == null, isRef, linea, columna);
-                ent.vars.Add(id, newVar);
+                Simbolo newVar = new Simbolo(type, id,size++, isConst,anterior == null, isRef, linea, columna);
+                vars.Add(id, newVar);
                 return newVar;
             }
-            else throw new Error("Semántico", "Ya existe una variable con el nombre: " + id + " en el mismo entorno",ent.obtenerAmbito(),linea,columna);
+            else throw new Error("Semántico", "Ya existe una variable con el nombre: " + id + " en el mismo entorno",obtenerAmbito(),linea,columna);
         }
 
         public Simbolo getVar(string id,int linea, int columna)
         {
-            Entorno ent = this;
-            while (ent.isAuxiliar) ent = ent.anterior;
-
             id = id.ToLower();
-            for(Entorno e = ent; e != null;e = e.anterior)
+            for(Entorno e = this; e != null;e = e.anterior)
             {
                 if (e.vars.ContainsKey(id)) return (Simbolo)e.vars[id];
             }
-            throw new Error("Semántico","No existe la variable: " + id, ent.obtenerAmbito(), linea, columna);
+            throw new Error("Semántico","No existe la variable: " + id, obtenerAmbito(), linea, columna);
+        }
+
+        public bool addStruct(string id, int size, LinkedList<Param> prams)
+        {
+            if (this.structs.ContainsKey(id.ToLower())) return false;
+            this.structs.Add(id.ToLower(), new SimboloStruct(id.ToLower(),size, prams));
+            return true;
+        }
+
+        public SimboloStruct structExists(string id)
+        {
+            if (this.structs.ContainsKey(id.ToLower())) return (SimboloStruct)this.structs[id.ToLower()];
+            return null;
+        }
+
+        public SimboloStruct searchStruct(string id)
+        {
+            id = id.ToLower();
+            for(Entorno e = this;e != null; e = e.anterior)
+            {
+                if(e.structs.ContainsKey(id)) return (SimboloStruct)e.structs[id]; 
+            }
+            return null;
+        }
+
+        public SimboloStruct getStruct(string id)
+        {
+            Entorno ent = getGlobal();
+            if (ent.structs.ContainsKey(id.ToLower())) return (SimboloStruct)ent.structs[id.ToLower()];
+            return null;
+        }
+
+        public bool addFunc(FunctionSt func,string uniqueId)
+        {
+            if (this.functions.ContainsKey(func.id.ToLower())) return false;
+            this.functions.Add(func.id.ToLower(), new SimboloFunction(func, uniqueId));
+            return true;
+        }
+
+        public SimboloFunction getFunc(string id)
+        {
+            if (this.functions.ContainsKey(id.ToLower())) return (SimboloFunction)this.functions[id.ToLower()];
+            return null;
+        }
+
+        public SimboloFunction searchFunc(string id)
+        {
+            id = id.ToLower();
+            for (Entorno e = this; e != null; e = e.anterior)
+            {
+                if(e.functions.ContainsKey(id)) return (SimboloFunction)e.functions[id];
+                e = e.anterior;
+            }
+            return null;
+        }
+
+
+        public void setEntornoFunc(string prop,SimboloFunction actualFunc,string ret)
+        {
+            this.size = 1; //1 porque la posicion 0 es para el return
+            this.prop = prop;
+            this.yreturn = ret;
+            this.actualFunc = actualFunc;
+        }
+
+
+
+        /* UTILIDADES */
+        public Entorno getGlobal()
+        {
+            Entorno ent = this;
+            while (ent.anterior != null) ent = ent.anterior;
+            return ent;
         }
 
         public int getSize()
         {
-            Entorno ent = this;
-            while (ent.isAuxiliar) ent = ent.anterior;
-            return ent.size;
+            return this.size;
         }
 
 

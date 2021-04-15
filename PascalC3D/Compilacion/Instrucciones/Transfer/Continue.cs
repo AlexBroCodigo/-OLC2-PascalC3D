@@ -24,13 +24,14 @@ namespace PascalC3D.Compilacion.Instrucciones.Transfer
         {
             try
             {
-                if (ent.ycontinue == null) throw new Error("Semántico", "continue no viene dentro de un ciclo", ent.obtenerAmbito(), linea, columna);
-                if(ent.isAuxiliar && ent.isFor)
+                if (ent.ycontinue.Count == 0) throw new Error("Semántico", "continue no viene dentro de un ciclo", ent.obtenerAmbito(), linea, columna);
+                IteFor @for = ent.fors.Last.Value;
+                if (@for.isFor)
                 {
-                    Asignacion actualizarVariable = ent.asignacion;
+                    Asignacion actualizarVariable = @for.actualizarVariable;
                     actualizarVariable.compilar(ent, errores);
                 }
-                Generator.getInstance().addGoto(ent.ycontinue);
+                Generator.getInstance().addGoto(ent.ycontinue.Last.Value);
             }
             catch (Error ex)
             {

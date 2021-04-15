@@ -30,16 +30,21 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
             try
             {
                 Generator generator = Generator.getInstance();
-                Entorno newEnv = new Entorno(ent, true);
                 generator.addComment("Inicia Repeat");
-                newEnv.ycontinue = this.condicion.falseLabel = generator.newLabel();
-                newEnv.ybreak = this.condicion.trueLabel = generator.newLabel();
+                this.condicion.falseLabel = generator.newLabel();
+                this.condicion.trueLabel = generator.newLabel();
+                ent.fors.AddLast(new IteFor(false, null));
+                ent.ycontinue.AddLast(this.condicion.falseLabel);
+                ent.ybreak.AddLast(this.condicion.trueLabel);
                 generator.addLabel(this.condicion.falseLabel);
-                foreach (Instruccion sentencia in sentencias) sentencia.compilar(newEnv, errores);
+                foreach (Instruccion sentencia in sentencias) sentencia.compilar(ent, errores);
                 Retorno condition = this.condicion.compilar(ent);
                 if (condition.type.tipo == Tipos.BOOLEAN)
                 {
                     generator.addLabel(condition.trueLabel);
+                    ent.fors.RemoveLast();
+                    ent.ycontinue.RemoveLast();
+                    ent.ybreak.RemoveLast();
                     generator.addComment("Finaliza Repeat");
                 }
                 else throw new Error("Semántico", "La condicion a evaluar en el repeat no es de tipo Boolean", ent.obtenerAmbito(), linea, columna);

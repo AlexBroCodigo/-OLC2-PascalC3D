@@ -2,6 +2,8 @@
 using Irony.Parsing;
 using PascalC3D.Compilacion.Arbol;
 using PascalC3D.Compilacion.Generador;
+using PascalC3D.Compilacion.Instrucciones.Functions;
+using PascalC3D.Compilacion.Instrucciones.Object;
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.ControlDOT;
@@ -53,15 +55,29 @@ namespace PascalC3D.Compilacion.Analizador
             Entorno ent = new Entorno(null, "GLOBAL", "GLOBAL");
             if (ast != null)
             {
-                //Generamos el C3D
-                foreach (Instruccion ins in ast.instrucciones)
+                //Primera pasada: solo funciones y structs
+                foreach (Instruccion element in ast.instrucciones)
                 {
-                    ins.compilar(ent, errores);
+                    if(element is FunctionSt || element is StructSt)
+                    element.compilar(ent, errores);
                 }
-                //Obtenemos el C3D
-                //TODO HACER UN SOLO GETCODE 
+
+                //Segunda pasada: Solo funciones (genera codigo);
+                foreach(Instruccion element in ast.instrucciones)
+                {
+                    if (element is FunctionSt) element.compilar(ent, errores);
+                }
+                string funciones = Generator.getInstance().getCode(); //obtengo las funciones no nativas
+
+                //Tercera pasada: Las instrucciones que van dentro del main
+                foreach (Instruccion element in ast.instrucciones)
+                {
+                    if (!(element is FunctionSt || element is StructSt)) element.compilar(ent, errores);
+                }
+                //GENERAMOS C3D
                 string codigo = Generator.getInstance().getEncabezado();
                 codigo += Generator.getInstance().getFuncionesNativas();
+                codigo += funciones;
                 codigo += Generator.getInstance().getOpenMain();
                 codigo += Generator.getInstance().getCode();
                 codigo += Generator.getInstance().getCloseMain();

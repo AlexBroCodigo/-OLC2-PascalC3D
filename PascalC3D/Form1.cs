@@ -250,9 +250,21 @@ namespace PascalC3D
             }
         }
 
-        
-
-
-
+        private void btnerrores1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var prostart = new System.Diagnostics.ProcessStartInfo("cmd", "/C C:\\compiladores2\\CompiErrores.html");
+                var proc = new System.Diagnostics.Process();
+                proc.StartInfo = prostart;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.Start();
+                proc.WaitForExit();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Imagen no encontrada, ruta: C:\\compiladores2\\CompiErrores.html");
+            }
+        }
     }
 }

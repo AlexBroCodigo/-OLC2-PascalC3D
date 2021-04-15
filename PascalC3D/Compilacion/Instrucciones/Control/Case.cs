@@ -33,13 +33,36 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
             {
                 Generator generator = Generator.getInstance();
                 generator.addComment("Inicia Case");
-                for(int i = 0; i < opciones.Count; i++)
+                //AJUSTANDO UTILIDADES
+                LinkedList<If> listaifs = new LinkedList<If>();
+                foreach (Opcion opcion in opciones)
                 {
-                    Opcion opcion = opciones.ElementAt(i);
                     opcion.variable = variable;
-                    if (i == opciones.Count - 1) opcion.sentenciasElse = sentenciasElse;
-                    opcion.compilar(ent, errores);
+                    listaifs.AddLast((If)opcion.compilar(ent, errores));
+                }   
+                for(int i = 0; i < listaifs.Count; i++)
+                {
+                    If actual;
+                    if (i == listaifs.Count - 1)
+                    {
+                        actual = listaifs.ElementAt(i);
+                        if (this.sentenciasElse != null)
+                        {
+                            actual.sentenciasElse = this.sentenciasElse;
+                        }
+                    } else
+                    {
+                        LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
+                        actual = listaifs.ElementAt(i);
+                        If siguiente = listaifs.ElementAt(i + 1);
+                        lista.AddLast((Instruccion)siguiente);
+                        actual.sentenciasElse = lista;
+                    }
                 }
+                If ifmaster = listaifs.First.Value;
+
+                //AREA DE COMPILACION
+                ifmaster.compilar(ent, errores);
                 generator.addComment("Finaliza Case");
             } catch(Error ex)
             {

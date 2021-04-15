@@ -23,8 +23,8 @@ namespace PascalC3D.Compilacion.Instrucciones.Transfer
         {
             try
             {
-                if (ent.ybreak == null) throw new Error("Semántico","break no viene dentro de un ciclo",ent.obtenerAmbito(),linea,columna);
-                Generator.getInstance().addGoto(ent.ybreak);
+                if (ent.ybreak.Count == 0) throw new Error("Semántico","break no viene dentro de un ciclo",ent.obtenerAmbito(),linea,columna);
+                Generator.getInstance().addGoto(ent.ybreak.Last.Value);
             } catch(Error ex)
             {
                 errores.agregarError(ex);

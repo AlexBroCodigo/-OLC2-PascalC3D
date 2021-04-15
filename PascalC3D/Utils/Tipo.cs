@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PascalC3D.Compilacion.TablaSimbolos;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,19 +14,19 @@ namespace PascalC3D.Utils
             STRING = 2,
             BOOLEAN = 3,
             ERROR = 4,
-            OBJECT = 5,
+            STRUCT = 5,
             VOID = 6
         }
         public Tipos tipo;
         public string tipoId;
-        public string tipoObjeto;
+        public SimboloStruct symStruct;
 
-        //tipoAuxiliar: Me servira para los objetos
-        public Tipo(Tipos tipo, string tipoId = "", string tipoObjeto = "")
+
+        public Tipo(Tipos tipo, string tipoId = "",SimboloStruct symStruct = null)
         {
             this.tipo = tipo;
             this.tipoId = tipoId;
-            this.tipoObjeto = tipoObjeto;
+            this.symStruct = symStruct;
         }
 
         public String tipoToString()
@@ -36,8 +37,7 @@ namespace PascalC3D.Utils
                 case Tipos.REAL: return "REAL";
                 case Tipos.STRING: return "STRING";
                 case Tipos.BOOLEAN: return "BOOLEAN";
-                case Tipos.ERROR: return "ERROR";
-                case Tipos.OBJECT: return "OBJECT";
+                case Tipos.STRUCT: return "STRUCT";
                 case Tipos.VOID: return "VOID";
                 default: return "ERROR";
             }

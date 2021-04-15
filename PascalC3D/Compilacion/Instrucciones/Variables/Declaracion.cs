@@ -56,13 +56,13 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
                             Primitivo defecto2 = new Primitivo(Tipos.BOOLEAN, false, linea, columna);
                             value = defecto2.compilar(ent);
                             break;
-                        default: //STRING
+                        default://case Tipos.STRING:
                             PrimitivoString defecto3 = new PrimitivoString(Tipos.STRING, "", linea, columna);
                             value = defecto3.compilar(ent);
                             break;
                     }
                 }
-                //validateType(ent);
+                this.validateType(ent);
                 foreach (string id in idList)
                 {
                     Simbolo newVar = ent.addVar(id, type, false, false, linea, columna);
@@ -100,6 +100,16 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
                         generator.addExpression(temp, "SP", "" + newVar.position, "+");
                         if (this.type.tipo == Tipos.BOOLEAN)
                         {
+                            //Mi modificacion
+                            //para cuando viene mas de una variable en la declaracion
+                            if (!idList.ElementAt(0).Equals(id))
+                            {
+                                value.trueLabel = generator.newLabel();
+                                value.falseLabel = generator.newLabel();
+                            }
+                            if (value.getValue().Equals("1")) generator.addGoto(value.trueLabel);
+                            else generator.addGoto(value.falseLabel);
+
                             string templabel = generator.newLabel();
                             generator.addLabel(value.trueLabel);
                             generator.addSetStack(temp, "1");
@@ -122,14 +132,24 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
             return null;
         }
 
+        public void validateType(Entorno ent)
+        {
+            if(this.type.tipo == Tipos.STRUCT)
+            {
+                SimboloStruct @struct = ent.searchStruct(this.type.tipoId);
+                if (@struct == null) throw new Error("Semántico","No existe el object: " + this.type.tipoId,ent.obtenerAmbito(),linea,columna);
+                this.type.symStruct = @struct;
+            }
+        }
+
         private bool sameType(Tipo type1, Tipo type2)
         {
             if (type1.tipo == type2.tipo)
             {
-                if (type1.tipo == Tipos.OBJECT) return type1.tipoId.ToLower().Equals(type2.tipoId.ToLower());
+                if (type1.tipo == Tipos.STRUCT) return type1.tipoId.ToLower().Equals(type2.tipoId.ToLower());
                 return true;
             }
-            else if (type1.tipo == Tipos.OBJECT || type2.tipo == Tipos.OBJECT)
+            else if (type1.tipo == Tipos.STRUCT || type2.tipo == Tipos.STRUCT)
             {
                 if (type1.tipo == Tipos.VOID || type2.tipo == Tipos.VOID) return true;
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PascalC3D.Compilacion.TablaSimbolos;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -28,9 +29,20 @@ namespace PascalC3D.Compilacion.Generador
             return generator;
         }
 
+        public LinkedList<string> getTempStorage()
+        {
+            return this.tempStorage;
+        }
+
+
         public void clearTempStorage()
         {
             tempStorage.Clear();
+        }
+
+        public void setTempStorage(LinkedList<string> tempStorage)
+        {
+            this.tempStorage = tempStorage;
         }
 
         public void clearCode()
@@ -49,7 +61,9 @@ namespace PascalC3D.Compilacion.Generador
 
         public string getCode()
         {
-            return String.Join("\n",code);
+            string cod = String.Join("\n",code);
+            this.code.Clear(); //vacio el codigo
+            return cod;
         }
 
         public string getEncabezado()
@@ -175,6 +189,13 @@ namespace PascalC3D.Compilacion.Generador
             code.AddLast(isFunc + "HP = HP + 1;");
         }
 
+        public void addGetHeap(string target,string index)
+        {
+            if (index.Contains("T")) code.AddLast(isFunc + target + " = Heap[(int)" + index + "];");
+            else code.AddLast(isFunc + target + " = Heap[" + index + "];");
+
+        }
+
         public void addSetHeap(string index,string value)
         {
             if (index.Contains("T")) code.AddLast(isFunc + "Heap[(int)" + index + "] = " + value + ";");
@@ -208,6 +229,17 @@ namespace PascalC3D.Compilacion.Generador
             code.AddLast(isFunc + id + "();");
         }
 
+        public void addBegin(string id)
+        {
+            code.AddLast("\n void " + id + "(){");
+        }
+
+        public void addEnd()
+        {
+            code.AddLast(isFunc + "return;\n}\n\n");
+        }
+
+
         public void addPrint(string formato, string value)
         {
             code.AddLast(isFunc + "printf(\"%" + formato + "\"," + value + ");");
@@ -238,6 +270,56 @@ namespace PascalC3D.Compilacion.Generador
         public void freeTemp(string temp)
         {
             if (tempStorage.Contains(temp)) tempStorage.Remove(temp);
+        }
+
+        public void addTemp(string temp)
+        {
+            if (!this.tempStorage.Contains(temp)) this.tempStorage.AddLast(temp);
+        }
+
+        public int saveTemps(Entorno ent)
+        {
+            if(this.tempStorage.Count > 0)
+            {
+                string temp = this.newTemporal();
+                this.freeTemp(temp);
+                int size = 0;
+
+                this.addComment("Inicia guardado de temporales");
+                this.addExpression(temp, "SP",""+ent.getSize(), "+");
+                foreach(string value in this.tempStorage)
+                {
+                    size++;
+                    this.addSetStack(temp, value);
+                    if(size!=this.tempStorage.Count) this.addExpression(temp, temp,"1","+");
+                }
+                this.addComment("Fin guardado de temporales");
+            }
+            int ptr = ent.getSize();
+            ent.size = ptr + this.tempStorage.Count;
+            return ptr;
+        }
+
+        public void recoverTemps(Entorno ent,int pos)
+        {
+            if(this.tempStorage.Count > 0)
+            {
+                string temp = this.newTemporal();
+                this.freeTemp(temp);
+                int size = 0;
+
+                this.addComment("Inicia recuperado de temporales");
+                this.addExpression(temp, "SP",""+pos, "+");
+                foreach(string value in this.tempStorage)
+                {
+                    size++;
+                    this.addGetStack(value, temp);
+                    if (size != this.tempStorage.Count)
+                        this.addExpression(temp, temp, "1", "+");
+                }
+                this.addComment("Finaliza recuperado de temporales");
+                ent.size = pos;
+            }
         }
 
         public string getOpenMain()

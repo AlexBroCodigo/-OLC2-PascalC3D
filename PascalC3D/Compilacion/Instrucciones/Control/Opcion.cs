@@ -18,7 +18,6 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
         private LinkedList<Expresion> etiquetas;
         private LinkedList<Instruccion> sentencias;
         public Expresion variable;
-        public LinkedList<Instruccion> sentenciasElse;
 
         public Opcion(LinkedList<Expresion> etiquetas, LinkedList<Instruccion> sentencias, int linea, int columna)
         {
@@ -27,7 +26,6 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
             this.linea = linea;
             this.columna = columna;
             variable = null;
-            sentenciasElse = null;
         }
 
         public object compilar(Entorno ent, Errores errores)
@@ -66,12 +64,9 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
                 condicion = oractual;
             }
             //PARA EL IF
-            If miif;
-            if (sentenciasElse != null) miif = new If(condicion, sentencias, sentenciasElse, linea, columna);
-            else miif = new If(condicion, sentencias, null, linea, columna);
+            If miif = new If(condicion, sentencias, null, linea, columna);
             //COMPILACION
-            miif.compilar(ent, errores);
-            return null;
+            return miif;
         }
     }
 }

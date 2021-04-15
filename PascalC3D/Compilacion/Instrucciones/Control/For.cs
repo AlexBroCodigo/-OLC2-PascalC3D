@@ -53,14 +53,14 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
                 Less menorIgual = new Less(true, left, segundo, linea, columna);
                 condicion = (Expresion)menorIgual;
                 Suma suma = new Suma(left, valorFAD, linea, columna);
-                actualizarVariable = new Asignacion(left, (Expresion)suma, linea, columna);
+                actualizarVariable = new Asignacion(target, (Expresion)suma, linea, columna);
 
             } else //downto
             {
                 Greater mayorIgual = new Greater(true,left,segundo,linea,columna);
                 condicion = (Expresion)mayorIgual;
                 Resta resta = new Resta(left, valorFAD, linea, columna);
-                actualizarVariable = new Asignacion(left, (Expresion)resta, linea, columna);
+                actualizarVariable = new Asignacion(target, (Expresion)resta, linea, columna);
             }
             //INICIO LA COMPILACION
             try
@@ -68,22 +68,22 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
                 Generator generator = Generator.getInstance();
                 generator.addComment("Inicia FOR");
                 asignacionInicial.compilar(ent, errores);
-                Entorno newEnv = new Entorno(ent,true,actualizarVariable);
                 string lblFor = generator.newLabel();
                 generator.addLabel(lblFor);
                 Retorno retcondicion = condicion.compilar(ent);
                 if (retcondicion.type.tipo == Tipos.BOOLEAN)
                 {
-                    newEnv.ybreak = retcondicion.falseLabel;
-                    newEnv.ycontinue = lblFor;
+                    ent.fors.AddLast(new IteFor(true, actualizarVariable));
+                    ent.ybreak.AddLast(retcondicion.falseLabel);
+                    ent.ycontinue.AddLast(lblFor);
                     generator.addLabel(retcondicion.trueLabel);
-                    foreach (Instruccion sentencia in sentencias)
-                    {
-                        sentencia.compilar(newEnv, errores);
-                    }
+                    foreach (Instruccion sentencia in sentencias) sentencia.compilar(ent, errores);
                     actualizarVariable.compilar(ent, errores);
                     generator.addGoto(lblFor);
                     generator.addLabel(retcondicion.falseLabel);
+                    ent.fors.RemoveLast();
+                    ent.ybreak.RemoveLast();
+                    ent.ycontinue.RemoveLast();
                     generator.addComment("Finaliza FOR");
                 }
                 else throw new Error("Semántico", "La condicion a evaluar en el for no es de tipo Boolean", ent.obtenerAmbito(), linea, columna);

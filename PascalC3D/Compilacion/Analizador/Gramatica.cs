@@ -296,7 +296,8 @@ namespace PascalC3D.Compilacion.Analizador
                              | cadena
                              | ACCESS;
 
-            ACCESS.Rule = ACCID;
+            ACCESS.Rule = ACCID
+                        | CALL;
 
             ACCID.Rule = ACCID + pt + id
                       | id;
@@ -365,7 +366,8 @@ namespace PascalC3D.Compilacion.Analizador
             WRT.Rule = writeln + parAbre + L_EXP + parCierre + PC
                      | write + parAbre + L_EXP + parCierre + PC;
 
-            EXT.Rule = exit + parAbre + EXPLOG + parCierre + PC;
+            EXT.Rule = exit + parAbre + EXPLOG + parCierre + PC
+                     | exit + parAbre + parCierre + PC;
 
             GTS.Rule = graficar + parAbre + parCierre + PC;
 

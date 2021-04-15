@@ -192,6 +192,7 @@ namespace PascalC3D
             this.btnerrores1.TabIndex = 15;
             this.btnerrores1.Text = "Listado de Errores";
             this.btnerrores1.UseVisualStyleBackColor = false;
+            this.btnerrores1.Click += new System.EventHandler(this.btnerrores1_Click);
             // 
             // btntabla1
             // 

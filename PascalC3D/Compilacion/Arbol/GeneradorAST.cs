@@ -8,6 +8,7 @@ using PascalC3D.Compilacion.Expresiones.Relacional;
 using PascalC3D.Compilacion.Instrucciones;
 using PascalC3D.Compilacion.Instrucciones.Control;
 using PascalC3D.Compilacion.Instrucciones.Functions;
+using PascalC3D.Compilacion.Instrucciones.Object;
 using PascalC3D.Compilacion.Instrucciones.Transfer;
 using PascalC3D.Compilacion.Instrucciones.Variables;
 using PascalC3D.Compilacion.Interfaces;
@@ -52,8 +53,7 @@ namespace PascalC3D.Compilacion.Arbol
             //INICIO DE LA GRAMATICA
             if (compararNodo(actual, "S"))
             {
-                LinkedList<Instruccion> pila = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0]);
-                LinkedList<Instruccion> instrucciones = new LinkedList<Instruccion>(pila);
+                LinkedList<Instruccion> instrucciones = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0]);
                 return new AST(instrucciones);
             }
             else if (compararNodo(actual, "P"))
@@ -103,6 +103,57 @@ namespace PascalC3D.Compilacion.Arbol
                 Expresion value = (Expresion)analizarNodo(actual.ChildNodes[2]);
                 return new DeclaConstante(id,value,actual.ChildNodes[0].Token.Location.Line,actual.ChildNodes[0].Token.Location.Column);
             }
+            else if (compararNodo(actual, "G_TY"))
+            {
+                return new Bloque((LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[1]));
+            }
+            else if (compararNodo(actual, "L_TY"))
+            {
+                LinkedList<Instruccion> instrucciones = new LinkedList<Instruccion>();
+                foreach (ParseTreeNode hijo in actual.ChildNodes)
+                {
+                    instrucciones.AddLast((Instruccion)analizarNodo(hijo));
+                }
+                return instrucciones;
+            }
+            else if (compararNodo(actual, "TY"))
+            {
+                if (compararNodo(actual.ChildNodes[2].ChildNodes[0], "OBJ"))
+                {
+                    string id = getLexema(actual.ChildNodes[0]);
+                    LinkedList<Param> paramList = (LinkedList<Param>) analizarNodo(actual.ChildNodes[2].ChildNodes[0]); //OBJ
+                    return new StructSt(id, paramList, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                }
+                else //ARY pendiente
+                {
+
+                }
+            }
+            else if (compararNodo(actual, "OBJ"))
+            {
+                return analizarNodo(actual.ChildNodes[2]);
+            }
+            else if (compararNodo(actual, "L_AT"))
+            {
+                LinkedList<Param> paramList = new LinkedList<Param>();
+                foreach(ParseTreeNode hijo in actual.ChildNodes)
+                {
+                    LinkedList<Param> paramhijos = (LinkedList<Param>)analizarNodo(hijo);
+                    foreach (Param paramhijo in paramhijos) paramList.AddLast(paramhijo);
+                }
+                return paramList;
+            }
+            else if (compararNodo(actual, "AT"))
+            {
+                LinkedList<string> idList = (LinkedList<string>)analizarNodo(actual.ChildNodes[0]); //L_ID
+                Tipo tipo = (Tipo)analizarNodo(actual.ChildNodes[2]); //ZTIPO
+                LinkedList<Param> atributos = new LinkedList<Param>();
+                foreach(string id in idList)
+                {
+                    atributos.AddLast(new Param(id, tipo));
+                }
+                return atributos;
+            }
             else if (compararNodo(actual, "DECLAS"))
             {
                 return new Bloque((LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[1]));
@@ -128,7 +179,12 @@ namespace PascalC3D.Compilacion.Arbol
                 {
                     idList = (LinkedList<string>)analizarNodo(actual.ChildNodes[0]);
                     tipo = (Tipo)analizarNodo(actual.ChildNodes[2]);
-                    return new Declaracion(tipo, idList, null, actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+                    Expresion value = null;
+                    if(tipo.tipo == Tipos.STRUCT)
+                    {
+                        value = new NewStruct(tipo.tipoId, actual.ChildNodes[1].Token.Location.Line,actual.ChildNodes[1].Token.Location.Column);
+                    }
+                    return new Declaracion(tipo, idList,value, actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
                 }
             }
             else if (compararNodo(actual, "L_ID"))
@@ -146,8 +202,8 @@ namespace PascalC3D.Compilacion.Arbol
                 Tipos tipoenum;
                 if (compararID(actual.ChildNodes[0]))
                 {
-                    //tipoenum = Tipo.Tipos.OBJECT;
-                    //return new Tipo(tipoenum, obtenerID(actual.ChildNodes[0]).ToLower());
+                    tipoenum = Tipo.Tipos.STRUCT;
+                    return new Tipo(tipoenum,getLexema(actual.ChildNodes[0]));
                 }
                 else //TIPO
                 {
@@ -165,6 +221,141 @@ namespace PascalC3D.Compilacion.Arbol
                     case "string": return Tipos.STRING;
                     default: return Tipos.BOOLEAN; //boolean
                 }
+            }
+            else if (compararNodo(actual, "L_PROF"))
+            {
+                LinkedList<Instruccion> funciones = new LinkedList<Instruccion>();
+                foreach (ParseTreeNode hijo in actual.ChildNodes)
+                {
+                    funciones.AddLast((Instruccion)analizarNodo(hijo));
+                }
+                return new Bloque(funciones);
+            }
+            else if (compararNodo(actual, "PROF"))
+            {
+                return analizarNodo(actual.ChildNodes[0]);
+            }
+            else if (compararNodo(actual, "PRO"))
+            {
+                Tipo tipo = new Tipo(Tipo.Tipos.VOID);
+                string id = getLexema(actual.ChildNodes[1]);
+                LinkedList<Param> parametros = new LinkedList<Param>();
+                LinkedList<Instruccion> sentencias;
+                if (actual.ChildNodes.Count == 7)
+                {
+                    parametros = (LinkedList<Param>)analizarNodo(actual.ChildNodes[3]);
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[6]);
+                }
+                else if (actual.ChildNodes.Count == 6)
+                {
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[5]);
+                }
+                else //4 hijos
+                {
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[3]);
+                }
+                return new FunctionSt(tipo, id, parametros, sentencias, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            }
+            else if (compararNodo(actual, "FUN"))
+            {
+                string id = getLexema(actual.ChildNodes[1]);
+                Tipo tipo;
+                LinkedList<Param> parametros = new LinkedList<Param>();
+                LinkedList<Instruccion> sentencias;
+                if (actual.ChildNodes.Count == 9)
+                {
+                    parametros = (LinkedList<Param>)analizarNodo(actual.ChildNodes[3]);
+                    tipo = (Tipo)analizarNodo(actual.ChildNodes[6]);
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[8]);
+                }
+                else if (actual.ChildNodes.Count == 8)
+                {
+                    tipo = (Tipo)analizarNodo(actual.ChildNodes[5]);
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[7]);
+                }
+                else //6 hijos
+                {
+                    tipo = (Tipo)analizarNodo(actual.ChildNodes[3]);
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[5]);
+                }
+                return new FunctionSt(tipo,id,parametros,sentencias,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            }
+            else if (compararNodo(actual, "L_PARAM"))
+            {
+                LinkedList<Param> parametros = new LinkedList<Param>();
+                LinkedList<Param> paramhijos;
+                foreach (ParseTreeNode hijo in actual.ChildNodes)
+                {
+                    paramhijos = (LinkedList<Param>)analizarNodo(hijo);
+                    foreach (Param param in paramhijos)
+                    {
+                        parametros.AddLast(param);
+                    }
+                }
+                return parametros;
+            }
+            else if (compararNodo(actual, "PARAM"))
+            {
+                LinkedList<string> idList;
+                Tipo tipo;
+                if (actual.ChildNodes.Count == 3)
+                {
+                    idList = (LinkedList<string>)analizarNodo(actual.ChildNodes[0]);
+                    tipo = (Tipo)analizarNodo(actual.ChildNodes[2]); //ZTIPO
+                } else //4 HIJOS
+                {
+                    idList = (LinkedList<string>)analizarNodo(actual.ChildNodes[1]);
+                    tipo = (Tipo)analizarNodo(actual.ChildNodes[3]); //ZTIPO
+                }
+                LinkedList<Param> atributos = new LinkedList<Param>();
+                foreach (string id in idList)
+                {
+                    atributos.AddLast(new Param(id, tipo));
+                }
+                return atributos;
+            }
+            else if (compararNodo(actual, "SPACE"))
+            {
+                LinkedList<Instruccion> sentencias;
+                if (actual.ChildNodes.Count == 1) //BEG
+                {
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0]);
+                }
+                else //L_DEF BEG
+                {
+                    sentencias = new LinkedList<Instruccion>();
+                    LinkedList<Instruccion> definiciones = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0]);
+                    LinkedList<Instruccion> instrucciones = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[1]);
+                    //RECORREMOS AMBAS LISTAS PARA CREAR SOLO UNA
+                    foreach (Instruccion definicion in definiciones)
+                    {
+                        sentencias.AddLast(definicion);
+                    }
+                    foreach (Instruccion ins in instrucciones)
+                    {
+                        sentencias.AddLast(ins);
+                    }
+                }
+                return sentencias;
+            }
+            else if (compararNodo(actual, "L_DEF"))
+            {
+                //Guardaremos todas las listas de declas o constantes en una sola
+                LinkedList<Instruccion> declaraciones = new LinkedList<Instruccion>();
+                foreach (ParseTreeNode hijo in actual.ChildNodes)
+                {
+                    LinkedList<Instruccion> declashijo = (LinkedList<Instruccion>)analizarNodo(hijo);
+                    foreach (Instruccion decla in declashijo)
+                    {
+                        declaraciones.AddLast(decla);
+                    }
+                }
+                return declaraciones;
+            }
+            else if (compararNodo(actual, "DEF"))
+            {
+                //Recordar que solo viene DECLAS. DEF -> DECLAS -> L_VR: lista
+                return (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0].ChildNodes[1]);
             }
             else if (compararNodo(actual, "MAIN"))
             {
@@ -378,8 +569,19 @@ namespace PascalC3D.Compilacion.Arbol
             else if (compararNodo(actual, "WRT"))
             {
                 bool esSalto = false;
-                if (getLexema(actual.ChildNodes[0]) == "writeln") esSalto = true; //sino es write
+                if (getLexema(actual.ChildNodes[0]).ToLower() == "writeln") esSalto = true; //sino es write
                 return new Writeln((LinkedList<Expresion>)analizarNodo(actual.ChildNodes[2]), esSalto, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            }
+            else if (compararNodo(actual, "EXT"))
+            {
+                if(actual.ChildNodes.Count == 5)
+                {
+                    return new Return((Expresion)analizarNodo(actual.ChildNodes[2]), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                } else // 4 HIJOS
+                {
+                    return new Return(null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                }
+                
             }
             else if (compararNodo(actual, "L_EXP"))
             {
@@ -484,6 +686,16 @@ namespace PascalC3D.Compilacion.Arbol
                     return new AccessId(id, null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 }
             }
+            else if (compararNodo(actual, "CALL"))
+            {
+                string id = getLexema(actual.ChildNodes[0]);
+                LinkedList<Expresion> parametros = new LinkedList<Expresion>();
+                if (actual.ChildNodes.Count == 5)
+                {
+                    parametros = (LinkedList<Expresion>)analizarNodo(actual.ChildNodes[2]);
+                }
+                return new AsignacionFunc(id,parametros,null,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            }
             else if (compararLiteral(actual)) //LITERAL
             {
                 return obtenerLiteral(actual);
@@ -545,20 +757,18 @@ namespace PascalC3D.Compilacion.Arbol
         {
             string nombre = nodo.ToString().ToLower();
             if (nombre.Contains("and")) return new And(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
+            else if (nombre.Contains("mod")) return new Modulo(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("or")) return new Or(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains(">=")) return new Greater(true, left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("<=")) return new Less(true, left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
-            else if (nombre.Contains("<>")) return new NotEquals(left,right, nodo.Token.Location.Line, nodo.Token.Location.Column);
-            else if (nombre.Contains(">")) return new Greater(false,left,right, nodo.Token.Location.Line, nodo.Token.Location.Column);
+            else if (nombre.Contains("<>")) return new NotEquals(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
+            else if (nombre.Contains(">")) return new Greater(false, left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("<")) return new Less(false, left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("=")) return new Equals(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("+")) return new Suma(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("-")) return new Resta(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
             else if (nombre.Contains("*")) return new Multi(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
-            else if (nombre.Contains("/")) return new Div(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column);
-            else return new Modulo(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column); //MODULO
+            else return new Div(left, right, nodo.Token.Location.Line, nodo.Token.Location.Column); //DIVISION
         }
-        
-
     }
 }
