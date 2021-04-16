@@ -2,9 +2,6 @@
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static PascalC3D.Utils.Tipo;
 
 namespace PascalC3D.Compilacion.Expresiones.Logica

@@ -70,16 +70,29 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                     generator.freeTemp(tempAux);
                     generator.addExpression(tempAux,"SP",""+symbol.position,"+");
                     generator.addGetStack(temp, tempAux);
-                    if (symbol.type.tipo != Tipos.BOOLEAN) return new Retorno(temp, true, symbol.type, symbol);
-
-                    Retorno retorno = new Retorno("", false, symbol.type);
-                    this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
-                    this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
-                    generator.addIf(temp,"1","==", this.trueLabel);
-                    generator.addGoto(this.falseLabel);
-                    retorno.trueLabel = this.trueLabel;
-                    retorno.falseLabel = this.falseLabel;
-                    return retorno;
+                    if (symbol.type.tipo != Tipos.BOOLEAN && symbol.type.tipo != Tipos.STRUCT) return new Retorno(temp, true, symbol.type, symbol);
+                    //MI MODIFICACION
+                    if(symbol.type.tipo == Tipos.BOOLEAN)
+                    {
+                        if(vieneDeRelacional) return new Retorno(temp, true, symbol.type, symbol);
+                        Retorno retorno = new Retorno("", false, symbol.type,symbol);
+                        this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
+                        this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
+                        generator.addIf(temp, "1", "==", this.trueLabel);
+                        generator.addGoto(this.falseLabel);
+                        retorno.trueLabel = this.trueLabel;
+                        retorno.falseLabel = this.falseLabel;
+                        return retorno;
+                    }
+                    else //STRUCT
+                    {
+                        Retorno retorno = new Retorno(temp, true, symbol.type, symbol);
+                        this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
+                        this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
+                        retorno.trueLabel = this.trueLabel;
+                        retorno.falseLabel = this.falseLabel;
+                        return retorno;
+                    }
                 }
             } else
             {
@@ -96,7 +109,7 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                 generator.addExpression(tempAux, anterior.getValue(),""+attribute.index,"+"); //Busca la posicion del atributo
                 generator.addGetHeap(temp, tempAux); //Trae el valor del heap
                 
-                Retorno retorno = new Retorno(temp, true, attribute.value.type);
+                Retorno retorno = new Retorno(temp, true, attribute.value.type,null,true);
                 retorno.trueLabel = anterior.trueLabel;
                 retorno.falseLabel = anterior.falseLabel;
                 return retorno;

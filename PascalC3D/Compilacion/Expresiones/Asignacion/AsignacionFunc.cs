@@ -4,6 +4,7 @@ using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using static PascalC3D.Utils.Tipo;
 
@@ -44,7 +45,12 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
                 {
                     paramsValues.AddLast(param.compilar(ent));
                 }
-                //TODO comprobar parametros correctos
+                
+                //Verifico si viene el mismo numero de parametros
+                if (paramsValues.Count != symFunc.parametros.Count) throw new Error("Semántico", "Faltan parametros a enviar en la llamada a la funcion:" + this.id, ent.obtenerAmbito(), linea, columna);
+                //Verifico si coninciden los tipos de los parametros
+                if (!this.validarTipoParametros(paramsValues, symFunc.parametros)) throw new Error("Semántico", "No coincide un tipo de parametro en la llamada a la funcion:" + this.id, ent.obtenerAmbito(), linea, columna);
+                
                 string temp = generator.newTemporal();
                 generator.freeTemp(temp);
                 //Paso de parametros en cambio simulado
@@ -99,5 +105,24 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
             }
             return null;
         }
+
+
+        public bool validarTipoParametros(LinkedList<Retorno> argumentos, LinkedList<Param> parametros)
+        {
+            for (int i = 0; i < parametros.Count; i++)
+            {
+                Retorno argumento = argumentos.ElementAt(i);
+                Param parametro = parametros.ElementAt(i);
+                if(argumento.type.tipo == parametro.type.tipo)
+                {
+                    if(parametro.type.tipo == Tipos.STRUCT)
+                    {
+                        if (!argumento.type.tipoId.ToLower().Equals(parametro.type.tipoId.ToLower())) return false;
+                    }
+                } else return false;
+            }
+            return true;
+        }
+
     }
 }

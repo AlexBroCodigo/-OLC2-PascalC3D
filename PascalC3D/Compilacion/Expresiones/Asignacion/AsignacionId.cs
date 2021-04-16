@@ -15,8 +15,8 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
         public string falseLabel { get; set; }
         public int linea { get; set; }
         public int columna { get; set; }
-
-        private string id;
+        
+        public string id;
         private Expresion anterior;
 
         public AsignacionId(string id, Expresion anterior, int linea, int columna)

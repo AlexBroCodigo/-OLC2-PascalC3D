@@ -114,7 +114,6 @@ namespace PascalC3D.Compilacion.TablaSimbolos
             for (Entorno e = this; e != null; e = e.anterior)
             {
                 if(e.functions.ContainsKey(id)) return (SimboloFunction)e.functions[id];
-                e = e.anterior;
             }
             return null;
         }

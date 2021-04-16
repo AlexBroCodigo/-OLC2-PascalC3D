@@ -149,10 +149,6 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
                 if (type1.tipo == Tipos.STRUCT) return type1.tipoId.ToLower().Equals(type2.tipoId.ToLower());
                 return true;
             }
-            else if (type1.tipo == Tipos.STRUCT || type2.tipo == Tipos.STRUCT)
-            {
-                if (type1.tipo == Tipos.VOID || type2.tipo == Tipos.VOID) return true;
-            }
             return false;
         }
     }

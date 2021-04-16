@@ -1,4 +1,6 @@
-﻿using PascalC3D.Compilacion.Generador;
+﻿using PascalC3D.Compilacion.Expresiones.Asignacion;
+using PascalC3D.Compilacion.Generador;
+using PascalC3D.Compilacion.Instrucciones.Transfer;
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.Utils;
@@ -31,6 +33,21 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
             {
                 Generator generator = Generator.getInstance();
                 generator.addComment("Inicia Asignacion");
+                
+                if (ent.ambito.Equals("FUNCTION"))
+                {
+                    SimboloFunction symFunc = ent.actualFunc;
+                    if (symFunc != null)
+                    {
+                        AsignacionId mytarget = (AsignacionId)this.target;
+                        if (mytarget.id.ToLower().Equals(symFunc.id.ToLower())) //Es un Return
+                        {
+                            Return @return = new Return(this.value, linea, columna);
+                            @return.isAsignacion = true;
+                            return @return.compilar(ent, errores);
+                        }
+                    }
+                }
 
                 Retorno target = this.target.compilar(ent);
                 Retorno value = this.value.compilar(ent);
@@ -95,10 +112,6 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
             {
                 if (type1.tipo == Tipos.STRUCT) return type1.tipoId.ToLower().Equals(type2.tipoId.ToLower());
                 return true;
-            }
-            else if(type1.tipo == Tipos.STRUCT || type2.tipo == Tipos.STRUCT)
-            {
-                if (type1.tipo == Tipos.VOID || type2.tipo == Tipos.VOID) return true;
             }
             return false;
         }

@@ -15,12 +15,13 @@ namespace PascalC3D.Compilacion.Instrucciones.Transfer
         public int columna { get; set; }
 
         private Expresion value;
-
+        public bool isAsignacion; 
         public Return(Expresion value, int linea, int columna)
         {
             this.value = value;
             this.linea = linea;
             this.columna = columna;
+            isAsignacion = false;
         }
 
         public object compilar(Entorno ent, Errores errores)
@@ -32,7 +33,7 @@ namespace PascalC3D.Compilacion.Instrucciones.Transfer
             Generator generator = Generator.getInstance();
 
             if (symFunc == null) throw new Error("Semántico","Exit no esta dentro de una función",ent.obtenerAmbito(),linea,columna);
-            if (!this.sameType(symFunc.type, value.type)) throw new Error("Semántico", "Se esperaba un " + symFunc.type.tipoToString() + " y se obtuvo un " + value.type.tipoToString(),ent.obtenerAmbito(),linea,columna);
+            if (!this.sameType(symFunc.type, value.type)) throw new Error("Semántico", "Se esperaba en Exit un " + symFunc.type.tipoToString() + " y se obtuvo un " + value.type.tipoToString(),ent.obtenerAmbito(),linea,columna);
             if (symFunc.type.tipo == Tipos.BOOLEAN)
             {
                 string templabel = generator.newLabel();
@@ -45,7 +46,7 @@ namespace PascalC3D.Compilacion.Instrucciones.Transfer
             }
             else if (symFunc.type.tipo != Tipos.VOID) generator.addSetStack("SP", value.getValue());
 
-            generator.addGoto(ent.yreturn);
+            if(!isAsignacion) generator.addGoto(ent.yreturn);
             return null;
         }
 
