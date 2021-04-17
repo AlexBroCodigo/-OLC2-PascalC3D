@@ -43,17 +43,31 @@ namespace PascalC3D.Compilacion.TablaSimbolos
             fors = new LinkedList<IteFor>();
         }
 
-        public Simbolo addVar(string id, Tipo type, bool isConst, bool isRef,int linea, int columna)
+        public Simbolo addVar(string id, Tipo type, bool isConst, bool isHeap,int linea, int columna)
         {
             id = id.ToLower();
             if (!vars.ContainsKey(id))
             {
-                Simbolo newVar = new Simbolo(type, id,size++, isConst,anterior == null, isRef, linea, columna);
+                Simbolo newVar = new Simbolo(type, id,size++, isConst,anterior == null, isHeap, linea, columna);
                 vars.Add(id, newVar);
                 return newVar;
             }
             else throw new Error("Semántico", "Ya existe una variable con el nombre: " + id + " en el mismo entorno",obtenerAmbito(),linea,columna);
         }
+
+        public Simbolo addVarRef(string id, Tipo type, bool isConst, bool isHeap, int linea, int columna,bool isRef)
+        {
+            id = id.ToLower();
+            if (!vars.ContainsKey(id))
+            {
+                Simbolo newVar = new Simbolo(type, id, size++, isConst, anterior == null, isHeap, linea, columna,isRef);
+                vars.Add(id, newVar);
+                this.size++;
+                return newVar;
+            }
+            else throw new Error("Semántico", "Ya existe una variable con el nombre: " + id + " en el mismo entorno", obtenerAmbito(), linea, columna);
+        }
+
 
         public Simbolo getVar(string id,int linea, int columna)
         {

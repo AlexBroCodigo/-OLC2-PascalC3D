@@ -13,10 +13,11 @@ namespace PascalC3D.Compilacion.TablaSimbolos
         public bool isConst;
         public bool isGlobal;
         public bool isHeap;
+        public bool isRef;
         public int linea;
         public int columna;
 
-        public Simbolo(Tipo type, string identificador, int position, bool isConst,bool isGlobal, bool isHeap,int linea, int columna)
+        public Simbolo(Tipo type, string identificador, int position, bool isConst,bool isGlobal, bool isHeap,int linea, int columna,bool isRef = false)
         {
             this.type = type;
             this.identificador = identificador;
@@ -24,6 +25,7 @@ namespace PascalC3D.Compilacion.TablaSimbolos
             this.isConst = isConst;
             this.isGlobal = isGlobal;
             this.isHeap = isHeap;
+            this.isRef = isRef;
             this.linea = linea;
             this.columna = columna;
         }

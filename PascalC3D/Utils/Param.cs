@@ -9,11 +9,12 @@ namespace PascalC3D.Utils
     {
         public string id;
         public Tipo type;
-
-        public Param(string id, Tipo type)
+        public bool isRef;
+        public Param(string id, Tipo type, bool isRef = false)
         {
             this.id = id.ToLower();
             this.type = type;
+            this.isRef = isRef;
         }
 
         public string getUnicType()

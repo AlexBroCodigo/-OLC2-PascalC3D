@@ -39,10 +39,65 @@ namespace PascalC3D.Compilacion.Expresiones.Access
             {
                 Simbolo symbol = ent.getVar(this.id, linea, columna);
                 string temp = generator.newTemporal();
-                if (symbol.isGlobal)
+                if (symbol.isRef)
+                {
+                    string tempAux = generator.newTemporal();
+                    generator.freeTemp(tempAux);
+                    generator.addExpression(tempAux, "SP", "" + symbol.position, "+");
+                    generator.addExpression(temp, tempAux, "1", "+");
+                    generator.addGetStack(temp,temp);
+
+                    this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
+                    this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
+                    generator.addIf(temp, "1", "==", this.trueLabel);
+                    generator.addGoto(this.falseLabel);
+
+                    string templabel = generator.newLabel();
+                    generator.addLabel(this.trueLabel);
+                    generator.addGetStack(temp, tempAux);
+                    generator.addGoto(templabel);
+                    generator.addLabel(this.falseLabel);
+                    generator.addGetHeap(temp, tempAux);
+                    generator.addLabel(templabel); //TENGO LA DIRECCION DE LA VARIABLE POR REFERENCIA
+
+                    generator.addGetStack(temp, temp);//OBTENGO SU VALOR Y LO GUARDO EN EL MISMO TEMPORAL
+                    if (symbol.type.tipo != Tipos.BOOLEAN && symbol.type.tipo != Tipos.STRUCT)
+                    {
+                        generator.addComment("Finaliza AccessId");
+                        return new Retorno(temp, true, symbol.type, symbol);
+                    }
+                    if (symbol.type.tipo == Tipos.BOOLEAN)
+                    {
+                        if (vieneDeRelacional) return new Retorno(temp, true, symbol.type, symbol);
+                        Retorno retorno = new Retorno("", false, symbol.type, symbol);
+                        this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
+                        this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
+                        generator.addIf(temp, "1", "==", this.trueLabel);
+                        generator.addGoto(this.falseLabel);
+                        retorno.trueLabel = this.trueLabel;
+                        retorno.falseLabel = this.falseLabel;
+                        generator.addComment("Finaliza AccessId");
+                        return retorno;
+                    }
+                    else //STRUCT
+                    {
+                        Retorno retorno = new Retorno(temp, true, symbol.type, symbol);
+                        this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
+                        this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
+                        retorno.trueLabel = this.trueLabel;
+                        retorno.falseLabel = this.falseLabel;
+                        generator.addComment("Finaliza AccessId");
+                        return retorno;
+                    }
+                }
+                else if (symbol.isGlobal)
                 {
                     generator.addGetStack(temp,""+symbol.position);
-                    if (symbol.type.tipo != Tipos.BOOLEAN && symbol.type.tipo != Tipos.STRUCT) return new Retorno(temp, true, symbol.type, symbol);
+                    if (symbol.type.tipo != Tipos.BOOLEAN && symbol.type.tipo != Tipos.STRUCT)
+                    {
+                        generator.addComment("Finaliza AccessId");
+                        return new Retorno(temp, true, symbol.type, symbol);
+                    }
                     //MI MODIFICACION
                     if(symbol.type.tipo == Tipos.BOOLEAN)
                     {
@@ -54,6 +109,7 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                         generator.addGoto(this.falseLabel);
                         retorno.trueLabel = this.trueLabel;
                         retorno.falseLabel = this.falseLabel;
+                        generator.addComment("Finaliza AccessId");
                         return retorno;
                     } else //STRUCT
                     {
@@ -62,15 +118,21 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                         this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
                         retorno.trueLabel = this.trueLabel;
                         retorno.falseLabel = this.falseLabel;
+                        generator.addComment("Finaliza AccessId");
                         return retorno;
                     }
-                } else
+                } 
+                else //isHeap
                 {
                     string tempAux = generator.newTemporal(); 
                     generator.freeTemp(tempAux);
                     generator.addExpression(tempAux,"SP",""+symbol.position,"+");
                     generator.addGetStack(temp, tempAux);
-                    if (symbol.type.tipo != Tipos.BOOLEAN && symbol.type.tipo != Tipos.STRUCT) return new Retorno(temp, true, symbol.type, symbol);
+                    if (symbol.type.tipo != Tipos.BOOLEAN && symbol.type.tipo != Tipos.STRUCT)
+                    {
+                        generator.addComment("Finaliza AccessId");
+                        return new Retorno(temp, true, symbol.type, symbol);
+                    }
                     //MI MODIFICACION
                     if(symbol.type.tipo == Tipos.BOOLEAN)
                     {
@@ -82,6 +144,7 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                         generator.addGoto(this.falseLabel);
                         retorno.trueLabel = this.trueLabel;
                         retorno.falseLabel = this.falseLabel;
+                        generator.addComment("Finaliza AccessId");
                         return retorno;
                     }
                     else //STRUCT
@@ -91,6 +154,7 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                         this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
                         retorno.trueLabel = this.trueLabel;
                         retorno.falseLabel = this.falseLabel;
+                        generator.addComment("Finaliza AccessId");
                         return retorno;
                     }
                 }
@@ -112,6 +176,7 @@ namespace PascalC3D.Compilacion.Expresiones.Access
                 Retorno retorno = new Retorno(temp, true, attribute.value.type,null,true);
                 retorno.trueLabel = anterior.trueLabel;
                 retorno.falseLabel = anterior.falseLabel;
+                generator.addComment("Finaliza AccessId");
                 return retorno;
             }
         }

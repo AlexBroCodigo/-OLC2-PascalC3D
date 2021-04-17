@@ -1,4 +1,5 @@
-﻿using PascalC3D.Compilacion.Generador;
+﻿using PascalC3D.Compilacion.Expresiones.Access;
+using PascalC3D.Compilacion.Generador;
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.Utils;
@@ -43,6 +44,11 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
 
                 foreach(Expresion param in this.parametros)
                 {
+                    if(param is AccessId)
+                    {
+                        AccessId access = (AccessId)param;
+                        access.vieneDeRelacional = true;
+                    }
                     paramsValues.AddLast(param.compilar(ent));
                 }
                 
@@ -60,9 +66,37 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
                     int index = -1;
                     foreach(Retorno value in paramsValues)
                     {
-                        //TODO paso de parametros booleanos
-                        generator.addSetStack(temp, value.getValue());
                         index++;
+                        Param param = symFunc.parametros.ElementAt(index);
+                        if (param.isRef)
+                        {
+                            if (value.symbol.isGlobal)
+                            {
+                                generator.addSetStack(temp,""+value.symbol.position);
+                                generator.addExpression(temp, temp, "1", "+");
+                                generator.addSetStack(temp,"1");
+                            }
+                            else if (value.symbol.isHeap)
+                            {
+                                generator.addSetStack(temp, "" + value.symbol.position);
+                                generator.addExpression(temp, temp, "1", "+");
+                                generator.addSetStack(temp, "0");
+                            }
+                            else
+                            {
+                                string temp2 = generator.newTemporal();
+                                generator.freeTemp(temp2);
+                                generator.addExpression(temp2, "SP", "" + value.symbol.position, "+");
+
+                                generator.addSetStack(temp,temp2);
+                                generator.addExpression(temp, temp, "1", "+");
+                                generator.addSetStack(temp, "1");
+                            }
+                        } else
+                        {
+                            generator.addSetStack(temp, value.getValue());
+                        }
+
                         if (index != paramsValues.Count - 1)
                             generator.addExpression(temp, temp, "1", "+");
                     }

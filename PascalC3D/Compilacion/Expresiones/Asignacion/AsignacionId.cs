@@ -31,14 +31,45 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
         public Retorno compilar(Entorno ent)
         {
             Generator generator = Generator.getInstance();
-            if(this.anterior == null)
+            generator.addComment("Inicia AsignacionId");
+            if (this.anterior == null)
             {
                 Simbolo symbol = ent.getVar(id,linea,columna);
-                if (symbol.isGlobal) return new Retorno("" + symbol.position, false, symbol.type, symbol);
-                else
+                if (symbol.isRef)
+                {
+
+                    string tempAux = generator.newTemporal();
+                    string temp = generator.newTemporal();
+                    generator.freeTemp(tempAux);
+                    generator.addExpression(tempAux, "SP", "" + symbol.position, "+");
+                    generator.addExpression(temp, tempAux, "1", "+");
+                    generator.addGetStack(temp, temp);
+
+                    this.trueLabel = this.trueLabel == "" ? generator.newLabel() : this.trueLabel;
+                    this.falseLabel = this.falseLabel == "" ? generator.newLabel() : this.falseLabel;
+                    generator.addIf(temp, "1", "==", this.trueLabel);
+                    generator.addGoto(this.falseLabel);
+
+                    string templabel = generator.newLabel();
+                    generator.addLabel(this.trueLabel);
+                    generator.addGetStack(temp, tempAux);
+                    generator.addGoto(templabel);
+                    generator.addLabel(this.falseLabel);
+                    generator.addGetHeap(temp, tempAux);
+                    generator.addLabel(templabel);
+                    generator.addComment("Finaliza AsignacionId");
+                    return new Retorno(temp, true, symbol.type, symbol); //OBTENGO LA COORDENADA DE LA VARIABLE POR REFERENCIA
+                }
+                else if (symbol.isGlobal)
+                {
+                    generator.addComment("Finaliza AsignacionId");
+                    return new Retorno("" + symbol.position, false, symbol.type, symbol);
+                }
+                else //isHeap
                 {
                     string temp = generator.newTemporal();
                     generator.addExpression(temp, "SP", "" + symbol.position, "+");
+                    generator.addComment("Finaliza AsignacionId");
                     return new Retorno(temp, true, symbol.type, symbol);
                 }
             } else
@@ -62,6 +93,7 @@ namespace PascalC3D.Compilacion.Expresiones.Asignacion
                     generator.addGetHeap(tempAux, anterior.getValue());
                 }
                 generator.addExpression(temp, tempAux, "" + attribute.index, "+");
+                generator.addComment("Finaliza AsignacionId");
                 return new Retorno(temp, true, attribute.value.type, new Simbolo(attribute.value.type, this.id, attribute.index, false, false, true,linea,columna));
             }
         }

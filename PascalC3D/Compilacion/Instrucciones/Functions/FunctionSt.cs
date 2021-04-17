@@ -59,7 +59,13 @@ namespace PascalC3D.Compilacion.Instrucciones.Functions
                     newEnv.setEntornoFunc(this.id, symbolFunc, returnLbl);
                     foreach(Param param in this.parametros)
                     {
-                        newEnv.addVar(param.id, param.type, false, false, linea, columna);
+                        if (param.isRef)
+                        {
+                            newEnv.addVarRef(param.id, param.type, false, false, linea, columna,true);
+                        } else
+                        {
+                            newEnv.addVar(param.id, param.type, false, false, linea, columna);
+                        }
                     }
                     generator.clearTempStorage();
                     generator.isFunc = "\t";

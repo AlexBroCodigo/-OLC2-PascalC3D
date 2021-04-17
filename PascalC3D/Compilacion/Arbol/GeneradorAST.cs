@@ -298,19 +298,22 @@ namespace PascalC3D.Compilacion.Arbol
             {
                 LinkedList<string> idList;
                 Tipo tipo;
+                bool isRef;
                 if (actual.ChildNodes.Count == 3)
                 {
                     idList = (LinkedList<string>)analizarNodo(actual.ChildNodes[0]);
                     tipo = (Tipo)analizarNodo(actual.ChildNodes[2]); //ZTIPO
+                    isRef = false;
                 } else //4 HIJOS
                 {
                     idList = (LinkedList<string>)analizarNodo(actual.ChildNodes[1]);
                     tipo = (Tipo)analizarNodo(actual.ChildNodes[3]); //ZTIPO
+                    isRef = true;
                 }
                 LinkedList<Param> atributos = new LinkedList<Param>();
                 foreach (string id in idList)
                 {
-                    atributos.AddLast(new Param(id, tipo));
+                    atributos.AddLast(new Param(id, tipo,isRef));
                 }
                 return atributos;
             }
