@@ -16,7 +16,7 @@ namespace PascalC3D.Compilacion.Expresiones.Literal
         public int linea { get; set; }
         public int columna { get; set; }
 
-        private Tipos type;
+        public Tipos type;
         public object value;
 
         public Primitivo(Tipos type, object value, int linea, int columna)

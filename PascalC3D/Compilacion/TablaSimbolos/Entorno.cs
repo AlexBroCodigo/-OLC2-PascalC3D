@@ -13,6 +13,7 @@ namespace PascalC3D.Compilacion.TablaSimbolos
         public Hashtable functions;
         public Hashtable structs;
         public Hashtable vars;
+        public Hashtable arrays;
         public Entorno anterior;
         public int size;
         public LinkedList<string> ybreak;
@@ -141,6 +142,12 @@ namespace PascalC3D.Compilacion.TablaSimbolos
             this.actualFunc = actualFunc;
         }
 
+        public bool addArray(string id,LinkedList<Dimension> dimensiones,Tipo tipoArreglo)
+        {
+            if (this.arrays.ContainsKey(id.ToLower())) return false;
+            this.arrays.Add(id.ToLower(), new SimboloArray(id.ToLower(),dimensiones,tipoArreglo));
+            return true;
+        }
 
 
         /* UTILIDADES */

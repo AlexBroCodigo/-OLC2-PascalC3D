@@ -37,7 +37,7 @@ namespace PascalC3D
             this.btncompilar = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnerrores2 = new System.Windows.Forms.Button();
-            this.btntabla2 = new System.Windows.Forms.Button();
+            this.btnRepOp = new System.Windows.Forms.Button();
             this.btnast2 = new System.Windows.Forms.Button();
             this.btnerrores1 = new System.Windows.Forms.Button();
             this.btntabla1 = new System.Windows.Forms.Button();
@@ -94,6 +94,7 @@ namespace PascalC3D
             this.btnoptimizar.TabIndex = 15;
             this.btnoptimizar.Text = "Optimizar";
             this.btnoptimizar.UseVisualStyleBackColor = false;
+            this.btnoptimizar.Click += new System.EventHandler(this.btnoptimizar_Click);
             // 
             // btncompilar
             // 
@@ -116,7 +117,7 @@ namespace PascalC3D
             // 
             this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.panel1.Controls.Add(this.btnerrores2);
-            this.panel1.Controls.Add(this.btntabla2);
+            this.panel1.Controls.Add(this.btnRepOp);
             this.panel1.Controls.Add(this.btnast2);
             this.panel1.Controls.Add(this.btnerrores1);
             this.panel1.Controls.Add(this.btntabla1);
@@ -138,28 +139,30 @@ namespace PascalC3D
             this.btnerrores2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnerrores2.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnerrores2.ForeColor = System.Drawing.Color.White;
-            this.btnerrores2.Location = new System.Drawing.Point(345, 189);
+            this.btnerrores2.Location = new System.Drawing.Point(319, 194);
             this.btnerrores2.Name = "btnerrores2";
             this.btnerrores2.Size = new System.Drawing.Size(178, 48);
             this.btnerrores2.TabIndex = 18;
             this.btnerrores2.Text = "Listado de Errores";
             this.btnerrores2.UseVisualStyleBackColor = false;
+            this.btnerrores2.Click += new System.EventHandler(this.btnerrores2_Click);
             // 
-            // btntabla2
+            // btnRepOp
             // 
-            this.btntabla2.BackColor = System.Drawing.Color.MidnightBlue;
-            this.btntabla2.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
-            this.btntabla2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.LightSkyBlue;
-            this.btntabla2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.RoyalBlue;
-            this.btntabla2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btntabla2.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btntabla2.ForeColor = System.Drawing.Color.White;
-            this.btntabla2.Location = new System.Drawing.Point(601, 189);
-            this.btntabla2.Name = "btntabla2";
-            this.btntabla2.Size = new System.Drawing.Size(178, 48);
-            this.btntabla2.TabIndex = 17;
-            this.btntabla2.Text = "Tabla de Simbolos";
-            this.btntabla2.UseVisualStyleBackColor = false;
+            this.btnRepOp.BackColor = System.Drawing.Color.MidnightBlue;
+            this.btnRepOp.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
+            this.btnRepOp.FlatAppearance.MouseDownBackColor = System.Drawing.Color.LightSkyBlue;
+            this.btnRepOp.FlatAppearance.MouseOverBackColor = System.Drawing.Color.RoyalBlue;
+            this.btnRepOp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRepOp.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnRepOp.ForeColor = System.Drawing.Color.White;
+            this.btnRepOp.Location = new System.Drawing.Point(549, 194);
+            this.btnRepOp.Name = "btnRepOp";
+            this.btnRepOp.Size = new System.Drawing.Size(230, 48);
+            this.btnRepOp.TabIndex = 17;
+            this.btnRepOp.Text = "Reporte de Optimizacion";
+            this.btnRepOp.UseVisualStyleBackColor = false;
+            this.btnRepOp.Click += new System.EventHandler(this.btntabla2_Click);
             // 
             // btnast2
             // 
@@ -176,6 +179,7 @@ namespace PascalC3D
             this.btnast2.TabIndex = 16;
             this.btnast2.Text = "Diagrama AST";
             this.btnast2.UseVisualStyleBackColor = false;
+            this.btnast2.Click += new System.EventHandler(this.btnast2_Click);
             // 
             // btnerrores1
             // 
@@ -186,7 +190,7 @@ namespace PascalC3D
             this.btnerrores1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnerrores1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnerrores1.ForeColor = System.Drawing.Color.White;
-            this.btnerrores1.Location = new System.Drawing.Point(345, 74);
+            this.btnerrores1.Location = new System.Drawing.Point(319, 74);
             this.btnerrores1.Name = "btnerrores1";
             this.btnerrores1.Size = new System.Drawing.Size(178, 48);
             this.btnerrores1.TabIndex = 15;
@@ -203,12 +207,13 @@ namespace PascalC3D
             this.btntabla1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btntabla1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btntabla1.ForeColor = System.Drawing.Color.White;
-            this.btntabla1.Location = new System.Drawing.Point(601, 74);
+            this.btntabla1.Location = new System.Drawing.Point(580, 74);
             this.btntabla1.Name = "btntabla1";
             this.btntabla1.Size = new System.Drawing.Size(178, 48);
             this.btntabla1.TabIndex = 9;
             this.btntabla1.Text = "Tabla de Simbolos";
             this.btntabla1.UseVisualStyleBackColor = false;
+            this.btntabla1.Click += new System.EventHandler(this.btntabla1_Click);
             // 
             // btnast1
             // 
@@ -315,7 +320,7 @@ namespace PascalC3D
         private System.Windows.Forms.Button btncompilar;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnerrores2;
-        private System.Windows.Forms.Button btntabla2;
+        private System.Windows.Forms.Button btnRepOp;
         private System.Windows.Forms.Button btnast2;
         private System.Windows.Forms.Button btnerrores1;
         private System.Windows.Forms.Button btntabla1;

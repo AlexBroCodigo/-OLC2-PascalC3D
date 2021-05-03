@@ -6,6 +6,7 @@ using PascalC3D.Compilacion.Expresiones.Literal;
 using PascalC3D.Compilacion.Expresiones.Logica;
 using PascalC3D.Compilacion.Expresiones.Relacional;
 using PascalC3D.Compilacion.Instrucciones;
+using PascalC3D.Compilacion.Instrucciones.Array;
 using PascalC3D.Compilacion.Instrucciones.Control;
 using PascalC3D.Compilacion.Instrucciones.Functions;
 using PascalC3D.Compilacion.Instrucciones.Object;
@@ -34,7 +35,6 @@ namespace PascalC3D.Compilacion.Arbol
 
         private void generar(ParseTreeNode raiz)
         {
-
             miarbol = (AST)analizarNodo(raiz);
         }
 
@@ -118,16 +118,36 @@ namespace PascalC3D.Compilacion.Arbol
             }
             else if (compararNodo(actual, "TY"))
             {
+                string id = getLexema(actual.ChildNodes[0]);
                 if (compararNodo(actual.ChildNodes[2].ChildNodes[0], "OBJ"))
                 {
-                    string id = getLexema(actual.ChildNodes[0]);
-                    LinkedList<Param> paramList = (LinkedList<Param>) analizarNodo(actual.ChildNodes[2].ChildNodes[0]); //OBJ
+                    LinkedList<Param> paramList = (LinkedList<Param>)analizarNodo(actual.ChildNodes[2].ChildNodes[0]); //OBJ
                     return new StructSt(id, paramList, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 }
-                else //ARY pendiente
+                else //ARRAY
                 {
-
+                    LinkedList<Dimension> dimensiones = (LinkedList<Dimension>)analizarNodo(actual.ChildNodes[2].ChildNodes[0].ChildNodes[2]); //L_DIM
+                    Tipo tipoArreglo = (Tipo)analizarNodo(actual.ChildNodes[2].ChildNodes[0].ChildNodes[5]); //ZTIPO
+                    return new ArraySt(id,dimensiones,tipoArreglo,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 }
+            }
+            else if (compararNodo(actual, "L_DIM"))
+            {
+                LinkedList<Dimension> dimensiones = new LinkedList<Dimension>();
+                int numero = 0;
+                foreach(ParseTreeNode hijo in actual.ChildNodes)
+                {
+                    Dimension dimension = (Dimension)analizarNodo(hijo);
+                    numero++;
+                    dimension.numero = numero;
+                    dimensiones.AddLast(dimension);
+                }
+                return dimensiones;
+            } else if (compararNodo(actual, "DIM"))
+            {
+                Primitivo inferior = (Primitivo)obtenerLiteral(actual.ChildNodes[0]);
+                Primitivo superior = (Primitivo)obtenerLiteral(actual.ChildNodes[3]);
+                return new Dimension(inferior, superior);
             }
             else if (compararNodo(actual, "OBJ"))
             {
@@ -584,7 +604,6 @@ namespace PascalC3D.Compilacion.Arbol
                 {
                     return new Return(null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 }
-                
             }
             else if (compararNodo(actual, "L_EXP"))
             {

@@ -15,18 +15,21 @@ namespace PascalC3D.Utils
             BOOLEAN = 3,
             ERROR = 4,
             STRUCT = 5,
-            VOID = 6
+            VOID = 6,
+            ARRAY = 7
         }
         public Tipos tipo;
         public string tipoId;
         public SimboloStruct symStruct;
+        public int dimension;
 
 
-        public Tipo(Tipos tipo, string tipoId = "",SimboloStruct symStruct = null)
+        public Tipo(Tipos tipo, string tipoId = "",SimboloStruct symStruct = null,int dimension = 0)
         {
             this.tipo = tipo;
             this.tipoId = tipoId;
             this.symStruct = symStruct;
+            this.dimension = dimension;
         }
 
         public String tipoToString()
@@ -39,6 +42,7 @@ namespace PascalC3D.Utils
                 case Tipos.BOOLEAN: return "BOOLEAN";
                 case Tipos.STRUCT: return "STRUCT";
                 case Tipos.VOID: return "VOID";
+                case Tipos.ARRAY: return "ARRAY";
                 default: return "ERROR";
             }
         }

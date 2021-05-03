@@ -2,8 +2,10 @@
 using Irony.Parsing;
 using PascalC3D.Compilacion.Arbol;
 using PascalC3D.Compilacion.Generador;
+using PascalC3D.Compilacion.Instrucciones.Array;
 using PascalC3D.Compilacion.Instrucciones.Functions;
 using PascalC3D.Compilacion.Instrucciones.Object;
+using PascalC3D.Compilacion.Instrucciones.Variables;
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.ControlDOT;
@@ -33,12 +35,12 @@ namespace PascalC3D.Compilacion.Analizador
                     MessageBox.Show("Se encontraron errores lexicos o sintacticos y no se pudo recuperar. No generamos C3D", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 case 2:
-                    generarImagen1(raiz);    //graficamos AST
+                    generarImagen(raiz);    //graficamos AST
                     errores.generarReporteErrores(1);
                     MessageBox.Show("Se encontraron errores lexicos o sintacticos pero nos recuperamos de ellos. No generamos C3D", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
                 case 3:
-                    generarImagen1(raiz);    //graficamos AST
+                    generarImagen(raiz);    //graficamos AST
                     MessageBox.Show("Cadena analizada correctamente. A generar C3D!", "PascalC3D", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     generarC3D(arbol, errores);
                     errores.generarReporteErrores(1);
@@ -55,41 +57,46 @@ namespace PascalC3D.Compilacion.Analizador
             Entorno ent = new Entorno(null, "GLOBAL", "GLOBAL");
             if (ast != null)
             {
-                //Primera pasada: solo funciones y structs
+                //Primera pasada: solo funciones, structs y Arrays
                 foreach (Instruccion element in ast.instrucciones)
                 {
-                    if(element is FunctionSt || element is StructSt)
-                    element.compilar(ent, errores);
+                    if(element is FunctionSt || element is StructSt || element is ArraySt) element.compilar(ent, errores);
                 }
 
-                //Segunda pasada: Solo funciones (genera codigo);
+                //Segunda pasada: Solo declaraciones
+                foreach(Instruccion element in ast.instrucciones)
+                {
+                    if (element is Declaracion || element is DeclaConstante) element.compilar(ent, errores);
+                }
+                string declaraciones = Generator.getInstance().getCode() + "\n"; //obtengo las declaraciones antes para guardarlos en los entornos antes de todo
+
+                //Tercera pasada: Solo funciones (genera codigo);
                 foreach(Instruccion element in ast.instrucciones)
                 {
                     if (element is FunctionSt) element.compilar(ent, errores);
                 }
                 string funciones = Generator.getInstance().getCode(); //obtengo las funciones no nativas
 
-                //Tercera pasada: Las instrucciones que van dentro del main
+                //Cuarta pasada: Las instrucciones que van dentro del main
                 foreach (Instruccion element in ast.instrucciones)
                 {
-                    if (!(element is FunctionSt || element is StructSt)) element.compilar(ent, errores);
+                    if (!(element is FunctionSt || element is StructSt || element is ArraySt || element is Declaracion || element is DeclaConstante)) element.compilar(ent, errores);
                 }
                 //GENERAMOS C3D
                 string codigo = Generator.getInstance().getEncabezado();
                 codigo += Generator.getInstance().getFuncionesNativas();
                 codigo += funciones;
                 codigo += Generator.getInstance().getOpenMain();
+                codigo += declaraciones;
                 codigo += Generator.getInstance().getCode();
                 codigo += Generator.getInstance().getCloseMain();
                 Form1.consola.Text = codigo;
                 Generator.getInstance().clearCode();
+                TableSymbol tabla = new TableSymbol();
+                tabla.generarTablaSimbolos(ent);
             }
-            else
-            {
-                MessageBox.Show("Error generando mi AST", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            else MessageBox.Show("Error generando mi AST", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-
 
         private static int verificarErroresLexSin(ParseTree arbol, ParseTreeNode raiz, Errores errores)
         {
@@ -108,11 +115,11 @@ namespace PascalC3D.Compilacion.Analizador
                 {
                     if (error.Message.Contains("Syntax"))
                     {
-                        errores.agregarError(new Error("Sintáctico", error.Message, "-", error.Location.Line, error.Location.Column));
+                        errores.agregarError(new Error("Sintáctico", error.Message, "-", error.Location.Line+1, error.Location.Column+1));
                     }
                     else
                     {
-                        errores.agregarError(new Error("Léxico", error.Message, "-", error.Location.Line, error.Location.Column));
+                        errores.agregarError(new Error("Léxico", error.Message, "-", error.Location.Line+1, error.Location.Column+1));
                     }
                 }
             }
@@ -120,10 +127,10 @@ namespace PascalC3D.Compilacion.Analizador
             return retorno;
         }
 
-        private static void generarImagen1(ParseTreeNode raiz)
+        private static void generarImagen(ParseTreeNode raiz)
         {
             String grafoDOT = ControlDot.getDOT(raiz);
-            generarArchivoDot1(grafoDOT);
+            generarArchivoDot(grafoDOT);
 
             try
             {
@@ -141,7 +148,7 @@ namespace PascalC3D.Compilacion.Analizador
             }
         }
 
-        public static void generarArchivoDot1(String grafo)
+        public static void generarArchivoDot(String grafo)
         {
             TextWriter archivo;
             archivo = new StreamWriter("C:\\compiladores2\\CompiAST.dot");

@@ -113,13 +113,14 @@ namespace PascalC3D.Compilacion.Analizador
                 TYP = new NonTerminal("TYP"),
                 OBJ = new NonTerminal("OBJ"),
                 ARY = new NonTerminal("ARY"),
+                L_DIM = new NonTerminal("L_DIM"),
+                DIM = new NonTerminal("DIM"),
                 L_DEF = new NonTerminal("L_DEF"),
                 ASIG = new NonTerminal("ASIG"),
                 ASID = new NonTerminal("ASID"),
                 L_ID = new NonTerminal("L_ID"),
                 TIPO = new NonTerminal("TIPO"),
                 ZTIPO = new NonTerminal("ZTIPO"),
-                IT = new NonTerminal("IT"),
                 PROF = new NonTerminal("PROF"),
                 DEF = new NonTerminal("DEF"),
                 PRO = new NonTerminal("PRO"),
@@ -216,7 +217,11 @@ namespace PascalC3D.Compilacion.Analizador
 
             AT.Rule = L_ID + dospt + ZTIPO + ptcoma;
 
-            ARY.Rule = array + corAbre + IT + corCierre + of + ZTIPO;
+            ARY.Rule = array + corAbre + L_DIM + corCierre + of + ZTIPO;
+
+            L_DIM.Rule = MakePlusRule(L_DIM, coma, DIM);
+
+            DIM.Rule = numero + pt + pt + numero;
 
             MAIN.Rule = begin + L_SEN + end + pt;
 
@@ -235,9 +240,6 @@ namespace PascalC3D.Compilacion.Analizador
 
             ZTIPO.Rule = TIPO
                        | id;
-
-            IT.Rule = integer
-                    | rboolean;
 
             PROF.Rule = PRO
                       | FUN;

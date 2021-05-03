@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using PascalC3D.Compilacion.Analizador;
+using PascalC3D.Optimizacion.Analizador;
 using ScintillaNET;
 
 namespace PascalC3D
@@ -264,6 +265,79 @@ namespace PascalC3D
             catch (Exception)
             {
                 MessageBox.Show("Imagen no encontrada, ruta: C:\\compiladores2\\CompiErrores.html");
+            }
+        }
+
+        private void btntabla1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var prostart = new System.Diagnostics.ProcessStartInfo("cmd", "/C C:\\compiladores2\\CompiTabla.html");
+                var proc = new System.Diagnostics.Process();
+                proc.StartInfo = prostart;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.Start();
+                proc.WaitForExit();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Imagen no encontrada, ruta: C:\\compiladores2\\CompiTabla.html");
+            }
+        }
+
+        private void btnast2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var prostart = new System.Diagnostics.ProcessStartInfo("cmd", "/C C:\\compiladores2\\OptiAST.jpg");
+                var proc = new System.Diagnostics.Process();
+                proc.StartInfo = prostart;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.Start();
+                proc.WaitForExit();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Imagen no encontrada, ruta: C:\\compiladores2\\OptiAST.jpg");
+            }
+        }
+
+        private void btnerrores2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var prostart = new System.Diagnostics.ProcessStartInfo("cmd", "/C C:\\compiladores2\\OptiErrores.html");
+                var proc = new System.Diagnostics.Process();
+                proc.StartInfo = prostart;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.Start();
+                proc.WaitForExit();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Imagen no encontrada, ruta: C:\\compiladores2\\OptiErrores.html");
+            }
+        }
+
+        private void btnoptimizar_Click(object sender, EventArgs e)
+        {
+            OptiSintactico.analizar(consola.Text);
+        }
+
+        private void btntabla2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var prostart = new System.Diagnostics.ProcessStartInfo("cmd", "/C C:\\compiladores2\\ReporteOpti.html");
+                var proc = new System.Diagnostics.Process();
+                proc.StartInfo = prostart;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.Start();
+                proc.WaitForExit();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Imagen no encontrada, ruta: C:\\compiladores2\\ReporteOpti.html");
             }
         }
     }

@@ -36,6 +36,9 @@ namespace PascalC3D.Compilacion.Instrucciones.Variables
                 {
                     if(newVar.type.tipo == Tipos.BOOLEAN)
                     {
+                        if (value.getValue().Equals("1")) generator.addGoto(value.trueLabel);
+                        else generator.addGoto(value.falseLabel);
+
                         string templabel = generator.newLabel();
                         generator.addLabel(value.trueLabel);
                         generator.addSetStack(""+newVar.position,"1");

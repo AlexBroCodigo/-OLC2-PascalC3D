@@ -13,6 +13,8 @@ namespace PascalC3D.Compilacion.TablaSimbolos
         public string uniqueId;
         public int size;
         public LinkedList<Param> parametros;
+        public int linea;
+        public int columna;
 
         public SimboloFunction(FunctionSt func,string uniqueId)
         {
@@ -21,6 +23,8 @@ namespace PascalC3D.Compilacion.TablaSimbolos
             this.size = func.parametros.Count;
             this.uniqueId = uniqueId;
             this.parametros = func.parametros;
+            this.linea = func.linea;
+            this.columna = func.columna;
         }
     }
 }

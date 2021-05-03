@@ -1,4 +1,5 @@
-﻿using PascalC3D.Compilacion.Expresiones.Logica;
+﻿using PascalC3D.Compilacion.Expresiones.Literal;
+using PascalC3D.Compilacion.Expresiones.Logica;
 using PascalC3D.Compilacion.Expresiones.Relacional;
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static PascalC3D.Utils.Tipo;
 
 namespace PascalC3D.Compilacion.Instrucciones.Control
 {
@@ -30,6 +32,8 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
 
         public object compilar(Entorno ent, Errores errores)
         {
+            //VERIFICO QUE NO SEAN DE TIPO REAL
+            this.validarEtiquetas(ent);
             //CREO MIS UTILIDADES (CREO UN IF CON SU RESPECTIVA CONDICION)
             //PARA LA CONDICION
             Expresion condicion;
@@ -67,6 +71,18 @@ namespace PascalC3D.Compilacion.Instrucciones.Control
             If miif = new If(condicion, sentencias, null, linea, columna);
             //COMPILACION
             return miif;
+        }
+
+        public void validarEtiquetas(Entorno ent)
+        {
+            foreach(Expresion etiqueta in etiquetas)
+            {
+                if(etiqueta is Primitivo)
+                {
+                    Primitivo prim = (Primitivo)etiqueta;
+                    if (prim.type == Tipos.REAL) throw new Error("Semántico", "No se puede colocar un valor de tipo REAL como opcion en el case", ent.obtenerAmbito(), linea, columna);
+                }
+            }
         }
     }
 }

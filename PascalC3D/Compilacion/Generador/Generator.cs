@@ -103,9 +103,9 @@ namespace PascalC3D.Compilacion.Generador
 
         public string native_concat_str()
         {
-            string concat = "void native_concat_str(){\n\tStack[SP] = HP;\n\tT0 = Stack[SP+1];\n\tT1 = Heap[(int)T0];\n\tL0:\n\t\t";
+            string concat = "void native_concat_str(){\n\tStack[SP] = HP;\n\tT0 = SP + 1;\n\tT0 = Stack[(int)T0];\n\tT1 = Heap[(int)T0];\n\tL0:\n\t\t";
             concat += "if(T1==-1) goto L1;\n\t\tHeap[HP] = T1;\n\t\tHP = HP + 1;\n\t\tT0 = T0 + 1;\n\t\tT1 = Heap[(int)T0];\n\t\tgoto L0;\n\t";
-            concat += "L1:\n\t\tT0 = Stack[SP+2];\n\t\tT1 = Heap[(int)T0];\n\tL2:\n\t\t";
+            concat += "L1:\n\t\tT0 = SP + 2;\n\t\tT0 = Stack[(int)T0];\n\t\tT1 = Heap[(int)T0];\n\tL2:\n\t\t";
             concat += "if(T1==-1) goto L3;\n\t\tHeap[HP] = T1;\n\t\tHP = HP + 1;\n\t\tT0 = T0 + 1;\n\t\tT1 = Heap[(int)T0];\n\t\tgoto L2;\n\tL3:\n\t\t";
             concat += "Heap[HP] = -1;\n\t\tHP = HP + 1;\n}\n\n";
             return concat;
@@ -113,7 +113,7 @@ namespace PascalC3D.Compilacion.Generador
 
         public string native_compare_str()
         {
-            string compare = "void native_compare_str(){\n\tStack[SP] = 0;\n\tT0 = Stack[SP + 1];\n\tT1 = Stack[SP + 2];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
+            string compare = "void native_compare_str(){\n\tStack[SP] = 0;\n\tT0 = SP + 1;\n\tT0 = Stack[(int)T0];\n\tT1 = SP + 2;\n\tT1 = Stack[(int)T1];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
             compare += "if(T2==-1) goto L3;\n\t\tif(T3==-1) goto L3;\n\tL1:\n\t\tif(T2==T3) goto L2;\n\t\tgoto L4;\n\tL2:\n\t\tT0 = T0 + 1;\n\t\tT1 = T1 + 1;\n\t\tT2 = Heap[(int)T0];\n\t\t";
             compare += "T3 = Heap[(int)T1];\n\t\tgoto L0;\n\tL3:\n\t\tif(T2!=T3) goto L4;\n\t\tStack[SP] = 1;\n\tL4:\n\t\treturn;\n}\n\n";
             return compare;
@@ -121,7 +121,7 @@ namespace PascalC3D.Compilacion.Generador
 
         public string native_less_str()
         {
-            string less = "void native_less_str(){\n\tStack[SP] = 0;\n\tT0 = Stack[SP + 1];\n\tT1 = Stack[SP + 2];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
+            string less = "void native_less_str(){\n\tStack[SP] = 0;\n\tT0 = SP + 1;\n\tT0 = Stack[(int)T0];\n\tT1 = SP + 2;\n\tT1 = Stack[(int)T1];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
             less += "if(T2==-1) goto L3;\n\t\tif(T3==-1) goto L3;\n\tL1:\n\t\tif(T2==T3) goto L2;\n\t\tgoto L3;\n\tL2:\n\t\tT0 = T0 + 1;\n\t\tT1 = T1 + 1;\n\t\tT2 = Heap[(int)T0];\n\t\t";
             less += "T3 = Heap[(int)T1];\n\t\tgoto L0;\n\tL3:\n\t\tif(T2>=T3) goto L4;\n\t\tStack[SP] = 1;\n\tL4:\n\t\treturn;\n}\n\n";
             return less;
@@ -129,7 +129,7 @@ namespace PascalC3D.Compilacion.Generador
 
         public string native_lessEq_str()
         {
-            string less = "void native_lessEq_str(){\n\tStack[SP] = 0;\n\tT0 = Stack[SP + 1];\n\tT1 = Stack[SP + 2];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
+            string less = "void native_lessEq_str(){\n\tStack[SP] = 0;\n\tT0 = SP + 1;\n\tT0 = Stack[(int)T0];\n\tT1 = SP + 2;\n\tT1 = Stack[(int)T1];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
             less += "if(T2==-1) goto L3;\n\t\tif(T3==-1) goto L3;\n\tL1:\n\t\tif(T2==T3) goto L2;\n\t\tgoto L3;\n\tL2:\n\t\tT0 = T0 + 1;\n\t\tT1 = T1 + 1;\n\t\tT2 = Heap[(int)T0];\n\t\t";
             less += "T3 = Heap[(int)T1];\n\t\tgoto L0;\n\tL3:\n\t\tif(T2>T3) goto L4;\n\t\tStack[SP] = 1;\n\tL4:\n\t\treturn;\n}\n\n";
             return less;
@@ -137,7 +137,7 @@ namespace PascalC3D.Compilacion.Generador
 
         public string native_greater_str()
         {
-            string greater = "void native_greater_str(){\n\tStack[SP] = 0;\n\tT0 = Stack[SP + 1];\n\tT1 = Stack[SP + 2];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
+            string greater = "void native_greater_str(){\n\tStack[SP] = 0;\n\tT0 = SP + 1;\n\tT0 = Stack[(int)T0];\n\tT1 = SP + 2;\n\tT1 = Stack[(int)T1];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
             greater += "if(T2==-1) goto L3;\n\t\tif(T3==-1) goto L3;\n\tL1:\n\t\tif(T2==T3) goto L2;\n\t\tgoto L3;\n\tL2:\n\t\tT0 = T0 + 1;\n\t\tT1 = T1 + 1;\n\t\tT2 = Heap[(int)T0];\n\t\t";
             greater += "T3 = Heap[(int)T1];\n\t\tgoto L0;\n\tL3:\n\t\tif(T2<=T3) goto L4;\n\t\tStack[SP] = 1;\n\tL4:\n\t\treturn;\n}\n\n";
             return greater;
@@ -145,7 +145,7 @@ namespace PascalC3D.Compilacion.Generador
 
         public string native_greaterEq_str()
         {
-            string greater = "void native_greaterEq_str(){\n\tStack[SP] = 0;\n\tT0 = Stack[SP + 1];\n\tT1 = Stack[SP + 2];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
+            string greater = "void native_greaterEq_str(){\n\tStack[SP] = 0;\n\tT0 = SP + 1;\n\tT0 = Stack[(int)T0];\n\tT1 = SP + 2;\n\tT1 = Stack[(int)T1];\n\tT2 = Heap[(int)T0];\n\tT3 = Heap[(int)T1];\n\tL0:\n\t\t";
             greater += "if(T2==-1) goto L3;\n\t\tif(T3==-1) goto L3;\n\tL1:\n\t\tif(T2==T3) goto L2;\n\t\tgoto L3;\n\tL2:\n\t\tT0 = T0 + 1;\n\t\tT1 = T1 + 1;\n\t\tT2 = Heap[(int)T0];\n\t\t";
             greater += "T3 = Heap[(int)T1];\n\t\tgoto L0;\n\tL3:\n\t\tif(T2<T3) goto L4;\n\t\tStack[SP] = 1;\n\tL4:\n\t\treturn;\n}\n\n";
             return greater;
@@ -157,7 +157,6 @@ namespace PascalC3D.Compilacion.Generador
             tempStorage.AddLast(temp);
             return temp;
         }
-
 
         public string newLabel()
         {
