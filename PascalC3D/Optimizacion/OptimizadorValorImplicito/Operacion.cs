@@ -140,7 +140,7 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
         //MI REGLA 5
         public bool validarRegla1(object varActual, object varAsigna,object varPrevia, object varAsignaPrevia) 
         {
-            if (varAsignaPrevia == varActual && varPrevia == varAsigna) return true;
+            if (varAsignaPrevia.ToString().Equals(varActual.ToString()) && varPrevia.ToString().Equals(varAsigna.ToString())) return true;
             return false;
         }
 

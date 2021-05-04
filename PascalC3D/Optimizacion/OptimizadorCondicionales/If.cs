@@ -16,6 +16,7 @@ namespace PascalC3D.Optimizacion.OptimizadorCondicionales
         private int columna;
         public LinkedList<Instruccion> instrucciones;
         public AST ast;
+        public bool seAplicoRegla3;
 
         public If(Operacion condicion, string etiqueta, int linea, int columna)
         {
@@ -25,6 +26,7 @@ namespace PascalC3D.Optimizacion.OptimizadorCondicionales
             this.columna = columna;
             instrucciones = new LinkedList<Instruccion>();
             ast = null;
+            seAplicoRegla3 = false;
         }
 
 
@@ -58,6 +60,7 @@ namespace PascalC3D.Optimizacion.OptimizadorCondicionales
                     optimizacion.regla = "Regla 5";
                     optimizacion.despues = "";
                     reporte.agregarOpt(optimizacion);
+                    return "";
                 }
             }
 
@@ -94,6 +97,7 @@ namespace PascalC3D.Optimizacion.OptimizadorCondicionales
                                 optimizacion.regla = "Regla 3";
                                 optimizacion.tipo = "Mirilla - Eliminación de Código Inalcanzable";
                                 reporte.agregarOpt(optimizacion);
+                                this.seAplicoRegla3 = true;
                                 etiquetaTrue.imprimirEtiqueta = false;
                                 //etiquetaTrue.ast = ast;
                                 codigoAugus += etiquetaTrue.optimizarCodigo(reporte,ast);

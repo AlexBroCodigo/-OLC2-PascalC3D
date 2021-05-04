@@ -111,9 +111,21 @@ namespace PascalC3D.Optimizacion.Analizador
                     {
                         etiquetas.AddLast(eti);
                     }
-                } else
+                } else //7 hijos
                 {
-                    etiquetas = (LinkedList<Etiqueta>)analizarNodo(actual.ChildNodes[5]);
+                    if (compararNodo(actual.ChildNodes[5], "L_SEN"))
+                    {
+                        LinkedList<Instruccion> sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[5]);
+
+                        //Simulo la primera etiqueta
+                        Etiqueta primerEtiqueta = new Etiqueta("//PET", sentencias, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                        etiquetas = new LinkedList<Etiqueta>();
+                        etiquetas.AddLast(primerEtiqueta);
+                    }
+                    else //L_ET
+                    {
+                        etiquetas = (LinkedList<Etiqueta>)analizarNodo(actual.ChildNodes[5]);
+                    }
                 }
                 return new Funcion(id, etiquetas);
             }
@@ -130,7 +142,14 @@ namespace PascalC3D.Optimizacion.Analizador
             else if (compararNodo(actual, "ET"))
             {
                 string id = getLexema(actual.ChildNodes[0]);
-                LinkedList<Instruccion> sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[2]);
+                LinkedList<Instruccion> sentencias;
+                if (actual.ChildNodes.Count == 3)
+                {
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[2]);
+                } else  //2 HIJOS
+                {
+                    sentencias = new LinkedList<Instruccion>();
+                }
                 return new Etiqueta(id,sentencias,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
             }
             else if (compararNodo(actual, "L_SEN"))

@@ -142,13 +142,15 @@ namespace PascalC3D.Optimizacion.Analizador
             L_FUN.Rule = MakePlusRule(L_FUN, FUN);
 
             FUN.Rule = rvoid + id + parAbre + parCierre + llaveAbre + L_SEN + L_ET +  llaveCierre
-                     | rvoid + id + parAbre + parCierre + llaveAbre + L_ET + llaveCierre;
+                     | rvoid + id + parAbre + parCierre + llaveAbre + L_ET + llaveCierre
+                     | rvoid + id + parAbre + parCierre + llaveAbre + L_SEN + llaveCierre;
 
             FUN.ErrorRule = SyntaxError + llaveCierre; //ERROR
 
             L_ET.Rule = MakePlusRule(L_ET, ET);
 
-            ET.Rule = label + dospt + L_SEN;
+            ET.Rule = label + dospt + L_SEN
+                    | label + dospt;
 
             L_SEN.Rule = MakePlusRule(L_SEN, SEN);
 

@@ -69,7 +69,11 @@ namespace PascalC3D.Optimizacion.OptimizadorAST
                 }
                 else
                 {
-                    optimizado = ins.optimizarCodigo(reporte).codigo;
+                    if(instruccionAnterior is If && ins is GOTO)
+                    {
+                        If antif = (If)instruccionAnterior;
+                        if(!antif.seAplicoRegla3) optimizado = ins.optimizarCodigo(reporte).codigo;
+                    } else optimizado = ins.optimizarCodigo(reporte).codigo; 
                 }
 
                 //Regla 2 Mirilla
