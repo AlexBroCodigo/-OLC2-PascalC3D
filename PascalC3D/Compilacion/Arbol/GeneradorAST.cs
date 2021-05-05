@@ -260,45 +260,45 @@ namespace PascalC3D.Compilacion.Arbol
                 Tipo tipo = new Tipo(Tipo.Tipos.VOID);
                 string id = getLexema(actual.ChildNodes[1]);
                 LinkedList<Param> parametros = new LinkedList<Param>();
-                LinkedList<Instruccion> sentencias;
+                LinkedList<Bloque> bloques;
                 if (actual.ChildNodes.Count == 7)
                 {
                     parametros = (LinkedList<Param>)analizarNodo(actual.ChildNodes[3]);
-                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[6]);
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[6]);
                 }
                 else if (actual.ChildNodes.Count == 6)
                 {
-                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[5]);
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[5]);
                 }
                 else //4 hijos
                 {
-                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[3]);
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[3]);
                 }
-                return new FunctionSt(tipo, id, parametros, sentencias, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                return new FunctionSt(tipo, id, parametros, bloques, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
             }
             else if (compararNodo(actual, "FUN"))
             {
                 string id = getLexema(actual.ChildNodes[1]);
                 Tipo tipo;
                 LinkedList<Param> parametros = new LinkedList<Param>();
-                LinkedList<Instruccion> sentencias;
+                LinkedList<Bloque> bloques;
                 if (actual.ChildNodes.Count == 9)
                 {
                     parametros = (LinkedList<Param>)analizarNodo(actual.ChildNodes[3]);
                     tipo = (Tipo)analizarNodo(actual.ChildNodes[6]);
-                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[8]);
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[8]);
                 }
                 else if (actual.ChildNodes.Count == 8)
                 {
                     tipo = (Tipo)analizarNodo(actual.ChildNodes[5]);
-                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[7]);
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[7]);
                 }
                 else //6 hijos
                 {
                     tipo = (Tipo)analizarNodo(actual.ChildNodes[3]);
-                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[5]);
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[5]);
                 }
-                return new FunctionSt(tipo,id,parametros,sentencias,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                return new FunctionSt(tipo,id,parametros,bloques,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
             }
             else if (compararNodo(actual, "L_PARAM"))
             {
@@ -339,46 +339,38 @@ namespace PascalC3D.Compilacion.Arbol
             }
             else if (compararNodo(actual, "SPACE"))
             {
+                LinkedList<Bloque> bloques;
+                Bloque nuevobloque;
                 LinkedList<Instruccion> sentencias;
                 if (actual.ChildNodes.Count == 1) //BEG
                 {
+                    bloques = new LinkedList<Bloque>();
                     sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0]);
+                    nuevobloque = new Bloque(sentencias);
+                    bloques.AddLast(nuevobloque);
                 }
                 else //L_DEF BEG
                 {
-                    sentencias = new LinkedList<Instruccion>();
-                    LinkedList<Instruccion> definiciones = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0]);
-                    LinkedList<Instruccion> instrucciones = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[1]);
-                    //RECORREMOS AMBAS LISTAS PARA CREAR SOLO UNA
-                    foreach (Instruccion definicion in definiciones)
-                    {
-                        sentencias.AddLast(definicion);
-                    }
-                    foreach (Instruccion ins in instrucciones)
-                    {
-                        sentencias.AddLast(ins);
-                    }
+                    bloques = (LinkedList<Bloque>)analizarNodo(actual.ChildNodes[0]);
+                    sentencias = (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[1]);
+                    nuevobloque = new Bloque(sentencias);
+                    bloques.AddLast(nuevobloque);
                 }
-                return sentencias;
+                return bloques;
             }
             else if (compararNodo(actual, "L_DEF"))
             {
-                //Guardaremos todas las listas de declas o constantes en una sola
-                LinkedList<Instruccion> declaraciones = new LinkedList<Instruccion>();
-                foreach (ParseTreeNode hijo in actual.ChildNodes)
+                LinkedList<Bloque> bloques = new LinkedList<Bloque>();
+                foreach(ParseTreeNode hijo in actual.ChildNodes)
                 {
-                    LinkedList<Instruccion> declashijo = (LinkedList<Instruccion>)analizarNodo(hijo);
-                    foreach (Instruccion decla in declashijo)
-                    {
-                        declaraciones.AddLast(decla);
-                    }
+                    bloques.AddLast((Bloque)analizarNodo(hijo));
                 }
-                return declaraciones;
+                return bloques;
             }
             else if (compararNodo(actual, "DEF"))
             {
-                //Recordar que solo viene DECLAS. DEF -> DECLAS -> L_VR: lista
-                return (LinkedList<Instruccion>)analizarNodo(actual.ChildNodes[0].ChildNodes[1]);
+                //retorno un bloque
+                return analizarNodo(actual.ChildNodes[0]);
             }
             else if (compararNodo(actual, "MAIN"))
             {

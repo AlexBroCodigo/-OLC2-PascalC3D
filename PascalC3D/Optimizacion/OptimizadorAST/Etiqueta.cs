@@ -35,7 +35,6 @@ namespace PascalC3D.Optimizacion.OptimizadorAST
             Instruccion instruccionAnterior = null;
             Asignacion asignacionPrevia = null;
             string codigoAnterior = "";
-            bool banberaIf = false;
 
             foreach(Instruccion ins in instrucciones)
             {
@@ -57,7 +56,6 @@ namespace PascalC3D.Optimizacion.OptimizadorAST
                     {
                         insif.instrucciones.AddLast(this.instrucciones.ElementAt(i));
                     }
-                    banberaIf = true;
                 }
 
                 string optimizado = "";
@@ -112,7 +110,7 @@ namespace PascalC3D.Optimizacion.OptimizadorAST
                         }
                         optimizacion.antes = codigoOptimizar;
                         optimizacion.despues = insgoto.id + ":\n";
-                        optimizacion.regla = "Regla 2";
+                        optimizacion.regla = "Regla 1";
                         optimizacion.tipo = "Mirilla - Eliminación de Código Inalcanzable";
                         reporte.agregarOpt(optimizacion);
                         codigoAnterior = "";

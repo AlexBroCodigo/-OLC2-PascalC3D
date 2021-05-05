@@ -1,4 +1,5 @@
 ﻿using PascalC3D.Compilacion.Generador;
+using PascalC3D.Compilacion.Instrucciones.Control;
 using PascalC3D.Compilacion.Interfaces;
 using PascalC3D.Compilacion.TablaSimbolos;
 using PascalC3D.Utils;
@@ -17,15 +18,15 @@ namespace PascalC3D.Compilacion.Instrucciones.Functions
         public string id;
         public LinkedList<Param> parametros;
         public Tipo type;
-        private LinkedList<Instruccion> sentencias;
+        private LinkedList<Bloque> bloques;
         private bool preCompile;
 
-        public FunctionSt(Tipo type, string id, LinkedList<Param> parametros, LinkedList<Instruccion> sentencias, int linea, int columna)
+        public FunctionSt(Tipo type, string id, LinkedList<Param> parametros, LinkedList<Bloque> bloques, int linea, int columna)
         {
             this.type = type;
             this.id = id;
             this.parametros = parametros;
-            this.sentencias = sentencias;
+            this.bloques = bloques;
             this.preCompile = true;
             this.linea = linea;
             this.columna = columna;
@@ -70,11 +71,31 @@ namespace PascalC3D.Compilacion.Instrucciones.Functions
                     generator.clearTempStorage();
                     generator.isFunc = "\t";
                     generator.addBegin(symbolFunc.uniqueId);
-                    foreach (Instruccion sentencia in sentencias) sentencia.compilar(newEnv, errores);
+
+                    /* Codigo extra para la recursividad de funciones */
+                    foreach(Bloque bloque in bloques)
+                    {
+                        if(bloque == bloques.Last.Value) foreach (Instruccion ins in bloque.instrucciones) ins.compilar(newEnv, errores); //El cuerpo de las a
+                        else
+                        {
+                            //Primera pasada: TODO
+                            foreach (Instruccion element in bloque.instrucciones) element.compilar(newEnv, errores);
+                            
+                            //Segunda pasada: solo funciones
+                            foreach (Instruccion element in bloque.instrucciones) if (element is FunctionSt) element.compilar(newEnv, errores);
+                        }
+                        
+                    }
+                    /* Aqui termina el codigo extra para la recursividad */
+                    //foreach (Instruccion sentencia in sentencias) sentencia.compilar(newEnv, errores);
+                    
                     generator.addLabel(returnLbl);
                     generator.addEnd();
                     generator.isFunc = "";
                     generator.setTempStorage(tempStorage);
+
+
+
                 }
             } catch(Error ex)
             {

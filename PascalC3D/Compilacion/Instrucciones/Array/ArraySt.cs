@@ -30,7 +30,6 @@ namespace PascalC3D.Compilacion.Instrucciones.Array
         {
             try
             {
-                if (!ent.addArray(id, dimensiones, tipoArreglo)) throw new Error("Semántico", "Ya existe el arreglo con el id: " + this.id, ent.obtenerAmbito(), linea, columna);
                 this.validarLimites(ent);
             } catch(Error ex)
             {

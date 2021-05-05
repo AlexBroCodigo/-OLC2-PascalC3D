@@ -43,14 +43,14 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
             {
                 if (this.valor.validarRegla8(this.id))
                 {
-                    optimizacion.regla = "Regla 8";
+                    optimizacion.regla = "Regla 6";
                     optimizacion.despues = "";
                     reporte.agregarOpt(optimizacion);
                     return "";
                 } else if (!this.valor.validarRegla12().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla12() + ";\n";
-                    optimizacion.regla = "Regla 12";
+                    optimizacion.regla = "Regla 10";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 }
@@ -59,7 +59,7 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
             {
                 if (this.valor.validarRegla9(this.id))
                 {
-                    optimizacion.regla = "Regla 9";
+                    optimizacion.regla = "Regla 7";
                     optimizacion.despues = "";
                     reporte.agregarOpt(optimizacion);
                     return "";
@@ -67,7 +67,7 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
                 else if (!this.valor.validarRegla13().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla13() + ";\n";
-                    optimizacion.regla = "Regla 13";
+                    optimizacion.regla = "Regla 11";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 }
@@ -76,28 +76,28 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
             {
                 if (this.valor.validarRegla10(this.id))
                 {
-                    optimizacion.regla = "Regla 10";
+                    optimizacion.regla = "Regla 8";
                     optimizacion.despues = "";
                     reporte.agregarOpt(optimizacion);
                     return "";
                 } else if (!this.valor.validarRegla14().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla14() + ";\n";
-                    optimizacion.regla = "Regla 14";
+                    optimizacion.regla = "Regla 12";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 }
                 else if (!this.valor.validarRegla16().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla16() + ";\n";
-                    optimizacion.regla = "Regla 16";
+                    optimizacion.regla = "Regla 14";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 }
                 else if (!this.valor.validarRegla17().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla17() + ";\n";
-                    optimizacion.regla = "Regla 17";
+                    optimizacion.regla = "Regla 15";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 }
@@ -106,7 +106,7 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
             {
                 if (this.valor.validarRegla11(this.id))
                 {
-                    optimizacion.regla = "Regla 11";
+                    optimizacion.regla = "Regla 9";
                     optimizacion.despues = "";
                     reporte.agregarOpt(optimizacion);
                     return "";
@@ -114,13 +114,13 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
                 else if (!this.valor.validarRegla15().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla15() + ";\n";
-                    optimizacion.regla = "Regla 15";
+                    optimizacion.regla = "Regla 13";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 } else if (!this.valor.validarRegla18().Equals(""))
                 {
                     codigoAugus = this.id + " = " + this.valor.validarRegla18() + ";\n";
-                    optimizacion.regla = "Regla 18";
+                    optimizacion.regla = "Regla 16";
                     optimizacion.despues = codigoAugus;
                     reporte.agregarOpt(optimizacion);
                 }
@@ -136,7 +136,7 @@ namespace PascalC3D.Optimizacion.OptimizadorValorImplicito
                         if (this.valor.validarRegla1(this.id, this.valor.valor, this.instruccionPrevia.id, this.instruccionPrevia.valor.valor))
                         {
                             optimizacion.tipo = "Mirilla - Eliminación de Instrucciones Redundantes y de Almacenamiento";
-                            optimizacion.regla = "Regla 1";
+                            optimizacion.regla = "Regla 5";
                             optimizacion.despues = "";
                             reporte.agregarOpt(optimizacion);
                             return "";

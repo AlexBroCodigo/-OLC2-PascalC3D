@@ -50,14 +50,14 @@ namespace PascalC3D.Optimizacion.OptimizadorCondicionales
             {
                 if (this.condicion.validarRegla4())
                 {
-                    optimizacion.regla = "Regla 4";
+                    optimizacion.regla = "Regla 3";
                     optimizacion.despues = "goto " + this.etiqueta + ";";
                     reporte.agregarOpt(optimizacion);
                     codigoAugus = "goto " + this.etiqueta + ";\n";
                 }
                 else if (this.condicion.validarRegla5())
                 {
-                    optimizacion.regla = "Regla 5";
+                    optimizacion.regla = "Regla 4";
                     optimizacion.despues = "";
                     reporte.agregarOpt(optimizacion);
                     return "";
@@ -94,7 +94,7 @@ namespace PascalC3D.Optimizacion.OptimizadorCondicionales
 
                                 optimizacion.antes = codigoOptimizar;
                                 optimizacion.despues = codigoOptimizado;
-                                optimizacion.regla = "Regla 3";
+                                optimizacion.regla = "Regla 2";
                                 optimizacion.tipo = "Mirilla - Eliminación de Código Inalcanzable";
                                 reporte.agregarOpt(optimizacion);
                                 this.seAplicoRegla3 = true;

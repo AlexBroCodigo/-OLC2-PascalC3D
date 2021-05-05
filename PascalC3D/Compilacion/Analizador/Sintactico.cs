@@ -57,10 +57,10 @@ namespace PascalC3D.Compilacion.Analizador
             Entorno ent = new Entorno(null, "GLOBAL", "GLOBAL");
             if (ast != null)
             {
-                //Primera pasada: solo funciones, structs y Arrays
+                //Primera pasada: solo funciones y structs
                 foreach (Instruccion element in ast.instrucciones)
                 {
-                    if(element is FunctionSt || element is StructSt || element is ArraySt) element.compilar(ent, errores);
+                    if(element is FunctionSt || element is StructSt) element.compilar(ent, errores);
                 }
 
                 //Segunda pasada: Solo declaraciones
@@ -80,7 +80,7 @@ namespace PascalC3D.Compilacion.Analizador
                 //Cuarta pasada: Las instrucciones que van dentro del main
                 foreach (Instruccion element in ast.instrucciones)
                 {
-                    if (!(element is FunctionSt || element is StructSt || element is ArraySt || element is Declaracion || element is DeclaConstante)) element.compilar(ent, errores);
+                    if (!(element is FunctionSt || element is StructSt || element is Declaracion || element is DeclaConstante)) element.compilar(ent, errores);
                 }
                 //GENERAMOS C3D
                 string codigo = Generator.getInstance().getEncabezado();
