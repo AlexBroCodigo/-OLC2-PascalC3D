@@ -27,12 +27,12 @@ namespace PascalC3D.Optimizacion.Analizador
                     MessageBox.Show("Se encontraron errores lexicos o sintacticos y no se pudo recuperar. No optimizamos el C3D", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 case 2:
-                    generarImagen(raiz);    //graficamos AST
+                    //generarImagen(raiz);    //graficamos AST
                     errores.generarReporteErrores(2);
                     MessageBox.Show("Se encontraron errores lexicos o sintacticos pero nos recuperamos de ellos. No optimizamos el C3D", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
                 case 3:
-                    generarImagen(raiz);    //graficamos AST
+                    //generarImagen(raiz);    //graficamos AST
                     MessageBox.Show("Cadena analizada correctamente. A optimizar el C3D!", "PascalC3D", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     optimizarC3D(cadena,arbol);
                     errores.generarReporteErrores(2);

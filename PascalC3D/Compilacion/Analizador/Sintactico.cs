@@ -35,12 +35,12 @@ namespace PascalC3D.Compilacion.Analizador
                     MessageBox.Show("Se encontraron errores lexicos o sintacticos y no se pudo recuperar. No generamos C3D", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 case 2:
-                    generarImagen(raiz);    //graficamos AST
+                    //generarImagen(raiz);    //graficamos AST
                     errores.generarReporteErrores(1);
                     MessageBox.Show("Se encontraron errores lexicos o sintacticos pero nos recuperamos de ellos. No generamos C3D", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
                 case 3:
-                    generarImagen(raiz);    //graficamos AST
+                    //generarImagen(raiz);    //graficamos AST
                     MessageBox.Show("Cadena analizada correctamente. A generar C3D!", "PascalC3D", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     generarC3D(arbol, errores);
                     errores.generarReporteErrores(1);
