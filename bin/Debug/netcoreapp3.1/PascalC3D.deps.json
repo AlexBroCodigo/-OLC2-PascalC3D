@@ -1,0 +1,107 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "PascalC3D/1.0.0": {
+        "dependencies": {
+          "fernandreu.ScintillaNET": "4.0.4",
+          "Irony": "1.1.0.0"
+        },
+        "runtime": {
+          "PascalC3D.dll": {}
+        }
+      },
+      "fernandreu.ScintillaNET/4.0.4": {
+        "runtime": {
+          "lib/netcoreapp3.1/ScintillaNET.dll": {
+            "assemblyVersion": "4.0.4.0",
+            "fileVersion": "4.0.4.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/License.txt": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/SciLexer.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "4.1.2.0"
+          },
+          "runtimes/win-x64/native/SciLexer.exp": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/SciLexer.lib": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/version.txt": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/License.txt": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/SciLexer.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "4.1.2.0"
+          },
+          "runtimes/win-x86/native/SciLexer.exp": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/SciLexer.lib": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/version.txt": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Irony/1.1.0.0": {
+        "runtime": {
+          "Irony.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PascalC3D/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "fernandreu.ScintillaNET/4.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UpnuIthh+VQiPBGAkrwLe8t1oG+ciL0j1FlZlkCYJ6Hz0MHG6BJQCcVIGzOoecdpnYqUCnj6CrZWnYZNL9hmPg==",
+      "path": "fernandreu.scintillanet/4.0.4",
+      "hashPath": "fernandreu.scintillanet.4.0.4.nupkg.sha512"
+    },
+    "Irony/1.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
